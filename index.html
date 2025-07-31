@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>CNHS File Depot</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&family=Righteous&display=swap');
+        :root {
+            --primary-color: #0052D4;
+            --secondary-color: #65C7F7;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+            --light-color: #ffffff;
+            --dark-color: #1d2b3a;
+            --text-color: #34495e;
+            --text-light: #f1f5f9;
+            --text-muted: #94a3b8;
+            --bg-light: #f8fafc;
+            --border-color: #e0e6ed;
+            --glass-bg: rgba(22, 33, 47, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.1);
+            --border-radius-lg: 16px;
+            --transition-speed: 0.3s ease;
+        }
+        * { box-sizing: border-box; }
+        
+        @keyframes animated-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.5s ease;
+        }
+        
+        body.logged-out-theme {
+            background-color: #12181f;
+        }
+        
+        body.logged-in-theme {
+            background: linear-gradient(135deg, #1d2b3a, #111827, #2c3e50);
+            background-size: 200% 200%;
+            animation: animated-gradient 15s ease infinite;
+            color: var(--text-light);
+        }
+        
+        h1, h2, h3, .logo { font-family: 'Montserrat', sans-serif; font-weight: 700; }
+
+        h2 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 2em;
+            color: var(--text-light);
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h2 svg {
+            width: 32px;
+            height: 32px;
+            opacity: 0.8;
+        }
+
+        #loader {
+            position: fixed; inset: 0; z-index: 99999; background: var(--bg-light);
+            display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #loader.hidden { opacity: 0; visibility: hidden; }
+        .spinner {
+            width: 50px; height: 50px; border-radius: 50%;
+            border: 5px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            animation: spinner-anim 1s infinite linear;
+        }
+        @keyframes spinner-anim { to { transform: rotate(360deg); } }
+        
+        .header {
+            background: rgba(17, 24, 39, 0.3);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 12px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo { font-size: 1.5em; color: var(--light-color); cursor: pointer; display: flex; align-items: center; gap: 12px; }
+        .logo span { color: var(--secondary-color); font-weight: 400; }
+        .header-logo-img { height: 40px; width: auto; }
+        .header-controls { display: flex; align-items: center; gap: 15px; }
+        .header-btn {
+            border: 1px solid var(--glass-border); background: transparent;
+            padding: 8px 18px; border-radius: 50px; cursor: pointer;
+            font-weight: 600; font-family: 'Montserrat', sans-serif;
+            transition: all var(--transition-speed); color: var(--text-light);
+        }
+        .header-btn:hover { background-color: var(--glass-border); transform: translateY(-2px); }
+        .logout-btn:hover { background-color: rgba(231, 76, 60, 0.2); border-color: var(--danger-color); color: var(--danger-color); }
+        .change-password-btn:hover { background-color: rgba(0, 82, 212, 0.2); border-color: var(--primary-color); color: var(--secondary-color); }
+        #auditLogBtn:hover { background-color: rgba(142, 68, 173, 0.2); border-color: #8e44ad; color: #a29bfe; }
+
+        main { padding: 30px 5%; max-width: 1600px; margin: 0 auto; }
+        
+        .content-section, .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .content-section {
+             padding: 30px; margin-bottom: 30px;
+        }
+        
+        #learningResourcesSection { background: transparent; padding: 0; box-shadow: none; border: none; }
+
+        #tsparticles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+
+        .landing-page { height: calc(100vh - 80px); min-height: 500px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; background: transparent; box-shadow: none; overflow: hidden; border: none; }
+        .landing-content { max-width: 800px; width: 100%; padding: clamp(2rem, 5vw, 4rem); }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .landing-page h1 { font-family: 'Righteous', sans-serif; font-size: clamp(2.5em, 6vw, 4.5em); margin: 0 0 15px 0; line-height: 1.1; font-weight: 400; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: fadeInUp 0.8s 0.2s both; }
+        .landing-page p { font-size: clamp(1em, 2vw, 1.3em); max-width: 600px; color: var(--text-muted); margin: 0 auto 30px auto; font-weight: 400; animation: fadeInUp 0.8s 0.4s both; }
+        .landing-btn { padding: 15px 40px; border: none; border-radius: 50px; cursor: pointer; font-size: 1.2em; font-weight: 700; color: white; transition: all var(--transition-speed); box-shadow: var(--shadow-md); background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); animation: fadeInUp 0.8s 0.6s both; }
+        .landing-btn:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 10px 20px rgba(0, 82, 212, 0.4); }
+
+        .auth-form { display: flex; flex-direction: column; gap: 15px; max-width: 400px; width: 100%; margin: 20px auto 0; }
+        input[type="text"], input[type="email"], input[type="password"] {
+            padding: 12px 18px; border-radius: 8px; font-size: 1em;
+            transition: all var(--transition-speed);
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--glass-border);
+            color: var(--text-light);
+        }
+        input::placeholder { color: var(--text-muted); }
+        input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 82, 212, 0.3); }
+
+        .form-button { padding: 14px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: 600; color: white; transition: all var(--transition-speed); box-shadow: var(--shadow-sm); background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); }
+        .form-button:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        
+        .admin-panel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px; }
+        .admin-form-section h3 { color: var(--secondary-color); margin: 0 0 20px 0; padding-bottom: 10px; border-bottom: 1px solid var(--glass-border); font-size: 1.2em; }
+        .admin-form-section { display: flex; flex-direction: column; }
+        .admin-form-section form { display:flex; flex-direction:column; gap: 15px; flex-grow: 1; }
+        
+        .user-id-display { font-size: 0.9em; color: var(--text-light); background: rgba(255, 255, 255, 0.1); padding: 8px 15px; border-radius: 8px; white-space: nowrap; }
+        
+        .search-container { display: flex; justify-content: center; margin-bottom: 40px; }
+        .search-container input[type="text"] { width: 100%; max-width: 600px; border-radius: 50px; font-size: 1.1em; text-align: center; }
+        
+        #materialsTableContainer, #auditLogContainer, #userManagementContainer {
+            background-color: transparent;
+            border-radius: var(--border-radius-lg);
+            overflow-x: auto;
+        }
+        .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .data-table th, .data-table td { padding: 16px; border-bottom: 1px solid var(--glass-border); vertical-align: middle; white-space: nowrap; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table thead th { background-color: rgba(0,0,0,0.2); color: var(--text-muted); font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+        .data-table tbody tr:hover { background-color: var(--glass-border); }
+        .material-description { font-weight: 600; color: var(--text-light); }
+        .data-table td.material-description, .data-table td.log-details, .data-table td.user-email { white-space: normal; }
+
+        .download-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 15px; background: linear-gradient(45deg, var(--success-color), #27ae60); color: white; text-decoration: none; border-radius: 50px; font-size: 0.9em; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.2s ease-in-out; }
+        .download-btn:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .download-btn:active { transform: scale(0.98); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .download-btn svg { width: 16px; height: 16px; fill: white; }
+        
+        .delete-link-btn { background: transparent; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: all var(--transition-speed); }
+        .delete-link-btn:hover { opacity: 1; transform: scale(1.1); }
+        .delete-link-btn svg { width: 20px; height: 20px; fill: var(--danger-color); }
+        
+        .file-link-group { display: flex; gap: 10px; align-items: center; }
+        .file-link-group input { flex-grow: 1; }
+        .generate-link-btn { padding: 12px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: 600; color: white; background: linear-gradient(45deg, #1abc9c, #16a085); transition: all var(--transition-speed); box-shadow: var(--shadow-sm); flex-shrink: 0; }
+        .generate-link-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        
+        .modal { display: none; position: fixed; z-index: 1001; inset: 0; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; animation: fadeIn 0.3s ease; }
+        .confirmation-modal { display: none; position: fixed; z-index: 1002; inset: 0; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; animation: fadeIn 0.3s ease; }
+        .modal-content { margin: auto; padding: 30px; width: 90%; max-width: 500px; text-align: center; position: relative; animation: slideInUp 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .modal-content h3 { margin: 0 0 15px 0; color: var(--text-light); }
+        .form-actions { margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; }
+        .form-actions .form-button { padding: 12px 25px; }
+        .form-actions .cancel-btn { background-color: #7f8c8d; color: var(--text-light); }
+        .form-actions .cancel-btn:hover { background-color: #95a5a6; }
+        .modal-buttons { margin-top: 25px; display: flex; justify-content: center; gap: 15px; }
+        .modal-buttons button { padding: 10px 22px; border-radius: 8px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all var(--transition-speed); border: none; }
+        .modal-buttons .confirm-btn { background-color: var(--danger-color); color: white; }
+        .modal-buttons .confirm-btn:hover { background-color: #c0392b; transform: translateY(-2px); }
+        .modal-buttons .cancel-btn { background-color: #7f8c8d; color: var(--text-light); }
+        .modal-buttons .cancel-btn:hover { background-color: #95a5a6; transform: translateY(-2px); }
+        
+        .role-toggle-btn { padding: 6px 14px; font-size: 0.8em; }
+        .role-toggle-btn.promote { background: var(--primary-color); }
+        .role-toggle-btn.revoke { background: var(--danger-color); }
+
+        #toastContainer { position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { padding: 15px 25px; border-radius: 8px; color: white; box-shadow: var(--shadow-lg); opacity: 0; transform: translateX(100%); animation: slideInToast 0.5s forwards, fadeOutToast 0.5s 4.5s forwards; }
+        .toast.success { background-color: var(--success-color); }
+        .toast.error { background-color: var(--danger-color); }
+        .toast.info { background-color: var(--primary-color); }
+        @keyframes slideInToast { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeOutToast { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+
+        .footer { background-color: transparent; color: var(--text-muted); text-align: center; padding: 20px 0; margin-top: 40px; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <div id="tsparticles"></div>
+    <div id="loader"><div class="spinner"></div></div>
+    <div id="toastContainer"></div>
+    <header class="header">
+        <div class="logo" id="mainLogo">
+            <img src="cogon.png" alt="CNHS Logo" class="header-logo-img">
+            CNHS <span>FILE DEPOT</span>
+        </div>
+        <div class="header-controls">
+            <div class="user-id-display" id="currentUserIdContainer" style="display: none;">
+                Logged in as: <span id="currentUserId"></span>
+            </div>
+            <button id="auditLogBtn" class="header-btn" style="display: none;">Audit Log</button>
+            <button id="changePasswordBtn" class="header-btn" style="display: none;">Account</button>
+            <button id="logoutBtn" class="header-btn" style="display: none;">Logout</button>
+        </div>
+    </header>
+    <main>
+        <section id="landingPage" class="content-section landing-page">
+            <div class="landing-content">
+                <h1>Cogon National High School<br>FILE DEPOT</h1>
+                <p>The official, secure, and centralized file repository for all teaching and non-teaching personnel.</p>
+                <button id="loginBtn" class="landing-btn">Login to Access Files</button>
+            </div>
+        </section>
+        <section id="authSection" class="content-section auth-section" style="display: none;">
+            <h2>Login</h2>
+            <form id="loginForm" class="auth-form">
+                <input type="email" id="loginEmail" placeholder="Email" required />
+                <input type="password" id="loginPassword" placeholder="Password" required />
+                <button type="submit" class="form-button">Login</button>
+            </form>
+        </section>
+        <section id="systemAdminPanel" class="content-section" style="display: none;">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962A3 3 0 0115 9.75V9A6 6 0 003 9v.75a3 3 0 015.25 2.037m-5.25 0A3 3 0 003 16.5v.75a6 6 0 006 6v-1.5a3 3 0 005.25-2.037m-5.25 0h9.75a.75.75 0 010 1.5H5.25a.75.75 0 010-1.5z" /></svg>
+                System Administration
+            </h2>
+            <div id="userManagementContainer"></div>
+        </section>
+        <section id="adminPanel" class="content-section" style="display: none;">
+             <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" /></svg>
+                Admin Dashboard
+            </h2>
+            <div class="admin-panel-grid">
+                <div class="admin-form-section">
+                    <h3>Add New Material</h3>
+                    <form id="addLinkForm">
+                        <input type="text" id="googleDriveShareLink" placeholder="Paste Google Drive Share Link Here" required />
+                        <div class="file-link-group">
+                            <input type="text" id="fileLink" placeholder="Generated Download Link" required readonly />
+                            <button type="button" id="generateLinkBtn" class="generate-link-btn">Generate</button>
+                        </div>
+                        <input type="text" id="linkDescription" placeholder="File Description" required />
+                        <button type="submit" class="form-button">Add Link</button>
+                    </form>
+                </div>
+                <div class="admin-form-section">
+                    <h3>Create User Account</h3>
+                    <form id="createUserForm">
+                        <input type="email" id="newUserEmail" placeholder="New User's Email" required />
+                        <input type="password" id="newUserPassword" placeholder="Temporary Password" required />
+                        <button type="submit" class="form-button">Create User</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <section id="updatePasswordSection" class="content-section" style="display: none;">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                Account Settings
+            </h2>
+            <form id="updatePasswordForm" class="auth-form">
+                <input type="password" id="newPasswordInput" placeholder="Enter New Password" required minlength="6" />
+                <input type="password" id="confirmNewPasswordInput" placeholder="Confirm New Password" required />
+                <div class="form-actions">
+                    <button type="button" id="cancelUpdatePasswordBtn" class="form-button cancel-btn">Back</button>
+                    <button type="submit" class="form-button">Update</button>
+                </div>
+            </form>
+        </section>
+        <section id="auditLogSection" class="content-section" style="display: none;">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+                System Audit Log
+            </h2>
+            <div id="auditLogContainer"></div>
+        </section>
+        <section id="learningResourcesSection" class="content-section" style="display: none;">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" /></svg>
+                File Depot
+            </h2>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search for files..." />
+            </div>
+            <div id="materialsTableContainer"></div>
+        </section>
+    </main>
+    <footer class="footer">
+        <p>© 2024 - <span id="currentYear"></span> Cogon National High School FILE DEPOT. All Rights Reserved.</p>
+    </footer>
+    <div id="confirmationModal" class="confirmation-modal">
+        <div class="modal-content">
+            <h3 id="confirmationTitle">Confirm Action</h3>
+            <p id="confirmationMessage">Are you sure?</p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" id="confirmActionBtn">Confirm</button>
+                <button class="cancel-btn" id="cancelModalBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@3.4.0/tsparticles.bundle.min.js"></script>
+    <script>
+        tsParticles.load({
+            id: "tsparticles",
+            options: {
+                fpsLimit: 60,
+                particles: {
+                    number: { value: 60, density: { enable: true, value_area: 800 } },
+                    color: { value: "#ffffff" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.3, random: true, anim: { enable: true, speed: 1, opacity_min: 0.05, sync: false } },
+                    size: { value: 2, random: true },
+                    line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.1, width: 1 },
+                    move: { enable: true, speed: 1, direction: "none", random: true, straight: false, out_mode: "out" }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: false }, resize: true },
+                    modes: { grab: { distance: 140, line_opacity: 0.3 } }
+                },
+                retina_detect: true
+            }
+        });
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, updatePassword, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getDatabase, ref, set, get, push, remove, onValue, serverTimestamp, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyArVK4JdqGYYMk2rlOLcwenCBzJIWOVYg8",
+            authDomain: "igacoslr.firebaseapp.com",
+            projectId: "igacoslr",
+            storageBucket: "igacoslr.appspot.com",
+            messagingSenderId: "168499425895",
+            appId: "1:168499425895:web:1e32d9d1c8f52887f0dac2"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+        const DOMElements = {
+            loader: document.getElementById('loader'),
+            toastContainer: document.getElementById('toastContainer'),
+            currentYear: document.getElementById("currentYear"),
+            mainLogo: document.getElementById('mainLogo'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            changePasswordBtn: document.getElementById('changePasswordBtn'),
+            auditLogBtn: document.getElementById('auditLogBtn'),
+            currentUserIdContainer: document.getElementById('currentUserIdContainer'),
+            currentUserId: document.getElementById('currentUserId'),
+            landingPage: document.getElementById('landingPage'),
+            loginBtn: document.getElementById('loginBtn'),
+            authSection: document.getElementById('authSection'),
+            loginForm: document.getElementById('loginForm'),
+            loginEmail: document.getElementById('loginEmail'),
+            loginPassword: document.getElementById('loginPassword'),
+            adminPanel: document.getElementById('adminPanel'),
+            systemAdminPanel: document.getElementById('systemAdminPanel'),
+            userManagementContainer: document.getElementById('userManagementContainer'),
+            addLinkForm: document.getElementById('addLinkForm'),
+            googleDriveShareLink: document.getElementById('googleDriveShareLink'),
+            generateLinkBtn: document.getElementById('generateLinkBtn'),
+            fileLinkInput: document.getElementById('fileLink'),
+            linkDescriptionInput: document.getElementById('linkDescription'),
+            createUserForm: document.getElementById('createUserForm'),
+            newUserEmail: document.getElementById('newUserEmail'),
+            newUserPassword: document.getElementById('newUserPassword'),
+            updatePasswordSection: document.getElementById('updatePasswordSection'),
+            updatePasswordForm: document.getElementById('updatePasswordForm'),
+            newPasswordInput: document.getElementById('newPasswordInput'),
+            confirmNewPasswordInput: document.getElementById('confirmNewPasswordInput'),
+            cancelUpdatePasswordBtn: document.getElementById('cancelUpdatePasswordBtn'),
+            learningResourcesSection: document.getElementById('learningResourcesSection'),
+            auditLogSection: document.getElementById('auditLogSection'),
+            auditLogContainer: document.getElementById('auditLogContainer'),
+            searchInput: document.getElementById("searchInput"),
+            materialsTableContainer: document.getElementById('materialsTableContainer'),
+            confirmationModal: document.getElementById('confirmationModal'),
+            confirmationTitle: document.getElementById('confirmationTitle'),
+            confirmationMessage: document.getElementById('confirmationMessage'),
+            confirmActionBtn: document.getElementById('confirmActionBtn'),
+            cancelModalBtn: document.getElementById('cancelModalBtn'),
+        };
+        const AppState = {
+            isAdmin: false,
+            isSystemAdmin: false,
+            allMaterials: [],
+            actionHandler: null,
+        };
+        const SYSTEM_ADMIN_UID = 'ei66KvfdRjakTEycf2acPG3EQo73';
+        const showToast = (message, type = 'info') => {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            DOMElements.toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        };
+        const logAction = (action, details) => {
+            const user = auth.currentUser;
+            if (!user) return;
+            const logRef = ref(db, 'audit_log');
+            push(logRef, {
+                action,
+                details,
+                userEmail: user.email,
+                uid: user.uid,
+                timestamp: serverTimestamp()
+            });
+        };
+        const checkAdminStatus = async (user) => {
+            if (!user) return { isAdmin: false, isSystemAdmin: false };
+            const isSystemAdmin = user.uid === SYSTEM_ADMIN_UID;
+            if (isSystemAdmin) return { isAdmin: true, isSystemAdmin: true };
+            const adminRef = ref(db, `admins/${user.uid}`);
+            const snapshot = await get(adminRef);
+            const isAdmin = snapshot.exists();
+            return { isAdmin, isSystemAdmin };
+        };
+        const updateUI = async () => {
+            const user = auth.currentUser;
+            const { isAdmin, isSystemAdmin } = await checkAdminStatus(user);
+            AppState.isAdmin = isAdmin;
+            AppState.isSystemAdmin = isSystemAdmin;
+            const allSections = [DOMElements.landingPage, DOMElements.authSection, DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.learningResourcesSection, DOMElements.updatePasswordSection, DOMElements.auditLogSection];
+            allSections.forEach(el => el.style.display = 'none');
+            DOMElements.logoutBtn.style.display = 'none';
+            DOMElements.changePasswordBtn.style.display = 'none';
+            DOMElements.auditLogBtn.style.display = 'none';
+            DOMElements.currentUserIdContainer.style.display = 'none';
+            if (user) {
+                document.body.className = 'logged-in-theme';
+                DOMElements.logoutBtn.style.display = 'block';
+                DOMElements.changePasswordBtn.style.display = 'block';
+                DOMElements.currentUserIdContainer.style.display = 'flex';
+                DOMElements.currentUserId.textContent = user.email;
+                DOMElements.learningResourcesSection.style.display = 'block';
+                fetchEducationalMaterials();
+                if (AppState.isAdmin) {
+                    DOMElements.adminPanel.style.display = 'block';
+                }
+                if (AppState.isSystemAdmin) {
+                    DOMElements.auditLogBtn.style.display = 'block';
+                    DOMElements.systemAdminPanel.style.display = 'block';
+                    renderUserList();
+                }
+            } else {
+                document.body.className = 'logged-out-theme';
+                DOMElements.landingPage.style.display = 'flex';
+            }
+        };
+        const fetchEducationalMaterials = () => {
+            const materialsRef = ref(db, 'educationalMaterials');
+            onValue(materialsRef, (snapshot) => {
+                AppState.allMaterials = [];
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        AppState.allMaterials.push({ id: child.key, ...child.val() });
+                    });
+                }
+                renderAllMaterials();
+            }, (error) => {
+                console.error("Firebase permission denied at /educationalMaterials:", error.message);
+            });
+        };
+        const renderUserList = async () => {
+            const usersRef = ref(db, 'users');
+            const adminsRef = ref(db, 'admins');
+            const usersSnapshot = await get(usersRef);
+            const adminsSnapshot = await get(adminsRef);
+            const container = DOMElements.userManagementContainer;
+            container.innerHTML = '<h3>Manage User Roles</h3>';
+            if (!usersSnapshot.exists()) {
+                container.innerHTML += '<p>No users have been created through the app yet.</p>';
+                return;
+            }
+            const users = usersSnapshot.val();
+            const admins = adminsSnapshot.exists() ? adminsSnapshot.val() : {};
+            let tableHTML = '<table class="data-table"><thead><tr><th>User Email</th><th>Role</th><th style="text-align:right;">Action</th></tr></thead><tbody>';
+            for (const uid in users) {
+                const user = users[uid];
+                const isCurrentUserAdmin = admins[uid];
+                if (uid === SYSTEM_ADMIN_UID) continue;
+                tableHTML += `
+                    <tr>
+                        <td class="user-email">${user.email}</td>
+                        <td>${isCurrentUserAdmin ? 'Admin' : 'User'}</td>
+                        <td style="text-align:right;">
+                            ${isCurrentUserAdmin
+                                ? `<button class="form-button role-toggle-btn revoke" data-uid="${uid}" data-email="${user.email}">Revoke Admin</button>`
+                                : `<button class="form-button role-toggle-btn promote" data-uid="${uid}" data-email="${user.email}">Promote to Admin</button>`
+                            }
+                        </td>
+                    </tr>
+                `;
+            }
+            tableHTML += '</tbody></table>';
+            container.innerHTML += tableHTML;
+        };
+        const renderAuditLog = () => {
+            const logRef = ref(db, 'audit_log');
+            onValue(logRef, (snapshot) => {
+                const container = DOMElements.auditLogContainer;
+                container.innerHTML = '';
+                if (!snapshot.exists()) {
+                    container.innerHTML = '<p>No system activity recorded yet.</p>';
+                    return;
+                }
+                const logs = [];
+                snapshot.forEach(child => logs.push(child.val()));
+                logs.reverse();
+                let tableHTML = '<table class="data-table"><thead><tr><th>Action</th><th>User</th><th>Details</th><th>Date</th></tr></thead><tbody>';
+                logs.forEach(log => {
+                    const date = new Date(log.timestamp).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+                    tableHTML += `
+                        <tr>
+                            <td>${log.action}</td>
+                            <td>${log.userEmail}</td>
+                            <td class="log-details">${log.details}</td>
+                            <td>${date}</td>
+                        </tr>
+                    `;
+                });
+                tableHTML += '</tbody></table>';
+                container.innerHTML += tableHTML;
+            });
+        };
+        const renderAllMaterials = () => {
+            const searchTerm = DOMElements.searchInput.value.toLowerCase();
+            const container = DOMElements.materialsTableContainer;
+            container.innerHTML = '';
+            const filteredMaterials = AppState.allMaterials.filter(material => {
+                if (!material?.description) return false;
+                if (!searchTerm) return true;
+                return material.description.toLowerCase().includes(searchTerm);
+            });
+            if (filteredMaterials.length === 0) {
+                const message = searchTerm ? 'No materials found matching your search.' : 'No files have been added yet.';
+                container.innerHTML = `<p style="text-align: center; padding: 40px; color: var(--text-muted);">${message}</p>`;
+                return;
+            }
+            filteredMaterials.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+            const tableRows = filteredMaterials.map(mat => {
+                const date = mat.createdAt ? new Date(mat.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric'}) : 'N/A';
+                return `
+                <tr>
+                    <td class="material-description">${mat.description}</td>
+                    <td style="text-align: center;">${mat.downloadCount || 0}</td>
+                    <td>${date}</td>
+                    <td>${mat.addedByEmail || 'N/A'}</td>
+                    <td style="text-align: right;">
+                        <button class="download-btn" data-id="${mat.id}" data-description="${mat.description}" data-link="${mat.link}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            <span>Download</span>
+                        </button>
+                    </td>
+                    ${AppState.isAdmin ? `
+                    <td style="text-align: center;">
+                        <button class="delete-link-btn" data-id="${mat.id}" data-description="${mat.description}" title="Delete Material">
+                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
+                        </button>
+                    </td>` : ''}
+                </tr>`
+            }).join('');
+            const adminHeader = AppState.isAdmin ? '<th style="text-align: center;">Action</th>' : '';
+            const tableHTML = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th style="text-align: center;">Downloads</th>
+                            <th>Date Added</th>
+                            <th>Added By</th>
+                            <th style="text-align: right;">Link</th>
+                            ${adminHeader}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+            `;
+            container.innerHTML = tableHTML;
+        };
+        const deleteItem = async (id, description) => {
+            const itemRef = ref(db, `educationalMaterials/${id}`);
+            try {
+                await remove(itemRef);
+                logAction('File Deleted', `Deleted: ${description}`);
+                showToast('Material deleted successfully.', 'success');
+            } catch (e) {
+                showToast('Error deleting material: ' + e.message, 'error');
+            } finally {
+                DOMElements.confirmationModal.style.display = 'none';
+                AppState.actionHandler = null;
+            }
+        };
+        const toggleAdminRole = async (uid, email, promote) => {
+            const adminRef = ref(db, `admins/${uid}`);
+            try {
+                if (promote) {
+                    await set(adminRef, { email: email });
+                    logAction('Admin Promoted', `Promoted: ${email}`);
+                    showToast(`${email} is now an admin.`, 'success');
+                } else {
+                    await remove(adminRef);
+                    logAction('Admin Revoked', `Revoked admin for: ${email}`);
+                    showToast(`Admin privileges revoked for ${email}.`, 'success');
+                }
+                renderUserList();
+            } catch(e) {
+                showToast('Error changing role: ' + e.message, 'error');
+            } finally {
+                DOMElements.confirmationModal.style.display = 'none';
+                AppState.actionHandler = null;
+            }
+        };
+        document.addEventListener("DOMContentLoaded", () => {
+            DOMElements.currentYear.textContent = new Date().getFullYear();
+            onAuthStateChanged(auth, user => updateUI());
+            DOMElements.loader.classList.add('hidden');
+        });
+        DOMElements.mainLogo.addEventListener('click', () => {
+            if (auth.currentUser) {
+                const allSections = [DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.updatePasswordSection, DOMElements.auditLogSection, DOMElements.authSection];
+                allSections.forEach(el => el.style.display = 'none');
+                DOMElements.learningResourcesSection.style.display = 'block';
+                if(AppState.isAdmin) DOMElements.adminPanel.style.display = 'block';
+                if(AppState.isSystemAdmin) DOMElements.systemAdminPanel.style.display = 'block';
+            } else {
+                location.reload();
+            }
+        });
+        DOMElements.loginBtn.addEventListener('click', () => {
+            DOMElements.landingPage.style.display = 'none';
+            DOMElements.authSection.style.display = 'block';
+            document.body.className = 'logged-in-theme'; 
+        });
+        DOMElements.logoutBtn.addEventListener('click', () => {
+            signOut(auth).catch(error => showToast('Logout failed: ' + error.message, 'error'));
+            showToast('You have been logged out.', 'info');
+        });
+        DOMElements.changePasswordBtn.addEventListener('click', () => {
+            const allSections = [DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.learningResourcesSection, DOMElements.auditLogSection];
+            allSections.forEach(sec => sec.style.display = 'none');
+            DOMElements.updatePasswordSection.style.display = 'block';
+        });
+        DOMElements.auditLogBtn.addEventListener('click', () => {
+            const allSections = [DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.learningResourcesSection, DOMElements.updatePasswordSection];
+            allSections.forEach(sec => sec.style.display = 'none');
+            DOMElements.auditLogSection.style.display = 'block';
+            renderAuditLog();
+        });
+        DOMElements.loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await signInWithEmailAndPassword(auth, DOMElements.loginEmail.value, DOMElements.loginPassword.value);
+            } catch (error) {
+                showToast('Login failed. Please check your credentials.', 'error');
+            }
+        });
+        DOMElements.createUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = DOMElements.newUserEmail.value;
+            const password = DOMElements.newUserPassword.value;
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const uid = userCredential.user.uid;
+                const userRef = ref(db, `users/${uid}`);
+                await set(userRef, { email: email });
+                logAction('User Created', `Created account for: ${email}`);
+                showToast(`User ${email} created successfully.`, 'success');
+                DOMElements.createUserForm.reset();
+                if (AppState.isSystemAdmin) {
+                    renderUserList();
+                }
+            } catch(error) {
+                showToast(`Error creating user: ${error.code}`, 'error');
+            }
+        });
+        DOMElements.updatePasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPassword = DOMElements.newPasswordInput.value;
+            const confirmPassword = DOMElements.confirmNewPasswordInput.value;
+            if (newPassword.length < 6) {
+                showToast('Password must be at least 6 characters.', 'error'); return;
+            }
+            if (newPassword !== confirmPassword) {
+                showToast('Passwords do not match.', 'error'); return;
+            }
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    await updatePassword(user, newPassword);
+                    logAction('Password Changed', 'User changed their own password.');
+                    showToast('Password updated successfully!', 'success');
+                    DOMElements.updatePasswordForm.reset();
+                    DOMElements.mainLogo.click();
+                } catch (error) {
+                    if (error.code === 'auth/requires-recent-login') {
+                        showToast('For security, please log out and log back in to change password.', 'error');
+                    } else {
+                        showToast(`Error: ${error.code}`, 'error');
+                    }
+                }
+            }
+        });
+        DOMElements.cancelUpdatePasswordBtn.addEventListener('click', () => {
+            DOMElements.mainLogo.click();
+        });
+        DOMElements.generateLinkBtn.addEventListener('click', () => {
+            const shareLink = DOMElements.googleDriveShareLink.value.trim();
+            if (!shareLink) {
+                showToast('Please paste a Google Drive share link first.', 'error'); return;
+            }
+            const match = shareLink.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) {
+                const fileId = match[1];
+                const downloadLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                DOMElements.fileLinkInput.value = downloadLink;
+                showToast('Download link generated!', 'success');
+            } else {
+                showToast('Invalid Google Drive share link format. Must contain "/d/FILE_ID/".', 'error');
+            }
+        });
+        DOMElements.addLinkForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const link = DOMElements.fileLinkInput.value.trim();
+            const description = DOMElements.linkDescriptionInput.value.trim();
+            if (!link || !description) {
+                showToast('Link and Description are required!', 'error'); return;
+            }
+            const newMaterialRef = push(ref(db, 'educationalMaterials'));
+            try {
+                await set(newMaterialRef, {
+                    link,
+                    description,
+                    downloadCount: 0,
+                    addedByEmail: auth.currentUser.email,
+                    createdAt: serverTimestamp(),
+                    addedBy: auth.currentUser.uid
+                });
+                logAction('File Uploaded', `Uploaded: ${description}`);
+                showToast('Link added successfully!', 'success');
+                DOMElements.addLinkForm.reset();
+                DOMElements.googleDriveShareLink.value = '';
+                DOMElements.fileLinkInput.value = '';
+            } catch (error) {
+                showToast('Error adding link: ' + error.message, 'error');
+            }
+        });
+        DOMElements.searchInput.addEventListener("input", renderAllMaterials);
+        DOMElements.materialsTableContainer.addEventListener('click', (e) => {
+            const deleteButton = e.target.closest('button.delete-link-btn');
+            const downloadButton = e.target.closest('button.download-btn');
+            if (deleteButton) {
+                const id = deleteButton.dataset.id;
+                const description = deleteButton.dataset.description;
+                DOMElements.confirmationTitle.textContent = 'Confirm Deletion';
+                DOMElements.confirmationMessage.textContent = `Are you sure you want to delete "${description}"?`;
+                DOMElements.confirmationModal.style.display = 'flex';
+                AppState.actionHandler = () => deleteItem(id, description);
+            }
+            if (downloadButton) {
+                const id = downloadButton.dataset.id;
+                const link = downloadButton.dataset.link;
+                const description = downloadButton.dataset.description;
+                const countRef = ref(db, `educationalMaterials/${id}/downloadCount`);
+                runTransaction(countRef, (currentCount) => (currentCount || 0) + 1)
+                .then(() => {
+                    logAction('File Downloaded', `Downloaded: ${description}`);
+                    window.open(link, '_blank');
+                }).catch((error) => {
+                    showToast('Could not open file. Try again.', 'error');
+                    window.open(link, '_blank');
+                });
+            }
+        });
+        DOMElements.userManagementContainer.addEventListener('click', (e) => {
+            const toggleButton = e.target.closest('.role-toggle-btn');
+            if (toggleButton) {
+                const uid = toggleButton.dataset.uid;
+                const email = toggleButton.dataset.email;
+                const promote = toggleButton.classList.contains('promote');
+                DOMElements.confirmationTitle.textContent = 'Confirm Role Change';
+                DOMElements.confirmationMessage.textContent = `Are you sure you want to ${promote ? 'promote' : 'revoke admin for'} ${email}?`;
+                DOMElements.confirmationModal.style.display = 'flex';
+                AppState.actionHandler = () => toggleAdminRole(uid, email, promote);
+            }
+        });
+        DOMElements.confirmActionBtn.addEventListener('click', () => {
+            if (AppState.actionHandler) AppState.actionHandler();
+        });
+        DOMElements.cancelModalBtn.addEventListener('click', () => {
+            DOMElements.confirmationModal.style.display = 'none';
+            AppState.actionHandler = null;
+        });
+    </script>
+</body>
+</html>
