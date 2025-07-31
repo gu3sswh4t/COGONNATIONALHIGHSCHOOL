@@ -244,7 +244,7 @@
         .admin-form-section form { display:flex; flex-direction:column; gap: 15px; flex-grow: 1; }
         
         .user-id-display { font-size: 0.9em; color: var(--text-color); background: rgba(0,0,0, 0.1); padding: 8px 15px; border-radius: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;}
-        .user-id-display > span { font-weight: bold; }
+        .user-id-display > span { font-weight: bold; text-transform: capitalize; }
 
         .search-container { display: flex; justify-content: center; margin-bottom: 40px; }
         .search-container input[type="text"] { width: 100%; max-width: 600px; border-radius: 50px; font-size: 1.1em; text-align: center; }
@@ -423,7 +423,7 @@
                 <span class="slider"></span>
             </label>
             <div class="user-id-display" id="currentUserIdContainer" style="display: none;">
-                Logged in as: <span id="currentUserId"></span>
+                Hello, <span id="currentUserId"></span>!
             </div>
             <button id="auditLogBtn" class="header-btn" style="display: none;">Audit Log</button>
             <button id="changePasswordBtn" class="header-btn" style="display: none;">Account</button>
@@ -674,7 +674,11 @@
                 DOMElements.logoutBtn.style.display = 'block';
                 DOMElements.changePasswordBtn.style.display = 'block';
                 DOMElements.currentUserIdContainer.style.display = 'flex';
-                DOMElements.currentUserId.textContent = user.email;
+                
+                const userEmail = user.email;
+                const username = userEmail.split('@')[0];
+                DOMElements.currentUserId.textContent = username;
+
                 DOMElements.learningResourcesSection.style.display = 'block';
                 fetchEducationalMaterials();
                 if (AppState.isAdmin) {
