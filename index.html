@@ -307,7 +307,6 @@
 
         .footer { background-color: transparent; color: var(--text-muted); text-align: center; padding: 20px 0; margin-top: 40px; font-size: 0.85em; }
 
-        /* --- Responsive Design Media Queries --- */
         @media (max-width: 992px) {
             .admin-panel-grid {
                 grid-template-columns: 1fr;
@@ -416,14 +415,14 @@
         <div class="logo" id="mainLogo">
             <img src="cogon.png" alt="CNHS Logo" class="header-logo-img">
             CNHS <span>FILE DEPOT</span>
-        </div>
-        <div class="header-controls">
             <label class="theme-switch" for="theme-toggle" title="Toggle theme">
                 <input type="checkbox" id="theme-toggle" />
                 <span class="slider"></span>
             </label>
+        </div>
+        <div class="header-controls">
             <div class="user-id-display" id="currentUserIdContainer" style="display: none;">
-                Hello, <span id="currentUserId"></span>!
+                Hello,&nbsp;<span id="currentUserId"></span>!
             </div>
             <button id="auditLogBtn" class="header-btn" style="display: none;">Audit Log</button>
             <button id="changePasswordBtn" class="header-btn" style="display: none;">Account</button>
