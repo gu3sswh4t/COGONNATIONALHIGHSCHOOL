@@ -1452,6 +1452,7 @@
             initializeTheme();
             populateMobileNav();
             startAchievementBanner();
+            DOMElements.currentYear.textContent = new Date().getFullYear();
             onAuthStateChanged(auth, user => {
                 updateUI().then(() => {
                     if (AppState.isSystemAdmin) {
