@@ -50,7 +50,7 @@
             --component-bg: #1d2b3a;
             --component-color: #f1f5f9;
             
-            --glass-bg: rgba(22, 33, 47, 0.5);
+            --glass-bg: rgba(22, 33, 47, 0.65);
             --glass-border: rgba(255, 255, 255, 0.1);
 
             --input-bg: rgba(0, 0, 0, 0.2);
@@ -192,6 +192,10 @@
         }
         .header-nav ul ul li a {
             white-space: nowrap;
+        }
+        .header-nav ul ul li a:hover {
+            transform: scale(1.05) translateX(5px);
+            background-color: rgba(255,255,255,0.2);
         }
 
         .theme-switch {
@@ -538,15 +542,11 @@
             flex-direction: column;
             text-align: center;
             gap: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         #mobileNavOverlay .header-nav ul ul {
-            display: flex;
-            position: static;
-            background: none;
-            box-shadow: none;
-            border: none;
-            padding-top: 15px;
-            min-width: 0;
+            display: none;
         }
         #mobileNavOverlay .header-nav ul li a {
             font-size: 1.5em;
@@ -555,6 +555,24 @@
             position: absolute;
             top: 20px;
             right: 20px;
+        }
+        
+        #achievementBanner {
+            background: var(--glass-bg);
+            text-align: center;
+            padding: 10px;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        #achievementText {
+            display: inline-block;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        #achievementText.visible {
+            opacity: 1;
         }
 
 
@@ -681,6 +699,9 @@
         <button class="modal-close-btn" id="mobileNavCloseBtn">&times;</button>
         <nav class="header-nav" id="mobileNavLinks"></nav>
     </div>
+    <div id="achievementBanner">
+        <span id="achievementText"></span>
+    </div>
     <header class="header">
         <div class="header-left">
             <div class="logo" id="mainLogo">
@@ -782,6 +803,14 @@
                         <div id="content-editor-area"></div>
                         <button type="submit" class="form-button">Save Content</button>
                     </form>
+                </div>
+                <div class="admin-form-section">
+                    <h3>Manage Achievements</h3>
+                    <form id="achievementForm">
+                        <input type="text" id="newAchievementText" placeholder="Enter new achievement text" required />
+                        <button type="submit" class="form-button">Add Achievement</button>
+                    </form>
+                    <div id="achievementsList"></div>
                 </div>
             </div>
         </section>
@@ -940,6 +969,9 @@
             contentManagementForm: document.getElementById('contentManagementForm'),
             pageContentSelect: document.getElementById('pageContentSelect'),
             contentEditorArea: document.getElementById('content-editor-area'),
+            achievementForm: document.getElementById('achievementForm'),
+            newAchievementText: document.getElementById('newAchievementText'),
+            achievementsList: document.getElementById('achievementsList'),
             addLinkForm: document.getElementById('addLinkForm'),
             googleDriveShareLink: document.getElementById('googleDriveShareLink'),
             generateLinkBtn: document.getElementById('generateLinkBtn'),
@@ -977,6 +1009,8 @@
             confirmationMessage: document.getElementById('confirmationMessage'),
             confirmActionBtn: document.getElementById('confirmActionBtn'),
             cancelModalBtn: document.getElementById('cancelModalBtn'),
+            achievementBanner: document.getElementById('achievementBanner'),
+            achievementText: document.getElementById('achievementText'),
         };
         const AppState = {
             isAdmin: false,
@@ -987,6 +1021,8 @@
             repoImages: [],
             galleryImages: [],
             currentGalleryIndex: 0,
+            achievements: [],
+            currentAchievementIndex: 0,
         };
         const SYSTEM_ADMIN_UID = 'ei66KvfdRjakTEycf2acPG3EQo73';
         const applyTheme = (theme) => {
@@ -1061,6 +1097,7 @@
                     DOMElements.systemOverviewBtn.style.display = 'block';
                     DOMElements.systemAdminPanel.style.display = 'block';
                     fetchAllUsers();
+                    renderAchievementsList();
                 }
             } else {
                 document.body.className = 'logged-out-theme';
@@ -1346,11 +1383,60 @@
             }
             updateGalleryImage();
         };
+        const populateMobileNav = () => {
+            const container = DOMElements.mobileNavLinks;
+            const links = DOMElements.headerNav.querySelectorAll('a[data-page-id]');
+            let navHTML = '<ul>';
+            links.forEach(link => {
+                navHTML += `<li><a href="#" data-page-id="${link.dataset.pageId}">${link.textContent}</a></li>`;
+            });
+            navHTML += '</ul>';
+            container.innerHTML = navHTML;
+        };
+        const startAchievementBanner = () => {
+            const achievementsRef = ref(db, 'achievements');
+            onValue(achievementsRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    AppState.achievements = Object.values(snapshot.val());
+                    if (AppState.achievements.length > 0) {
+                        DOMElements.achievementBanner.style.display = 'block';
+                        setInterval(() => {
+                            const achievementText = DOMElements.achievementText;
+                            achievementText.classList.remove('visible');
+                            setTimeout(() => {
+                                AppState.currentAchievementIndex = (AppState.currentAchievementIndex + 1) % AppState.achievements.length;
+                                achievementText.textContent = AppState.achievements[AppState.currentAchievementIndex].text;
+                                achievementText.classList.add('visible');
+                            }, 500);
+                        }, 5000);
+                    } else {
+                        DOMElements.achievementBanner.style.display = 'none';
+                    }
+                } else {
+                    DOMElements.achievementBanner.style.display = 'none';
+                }
+            });
+        };
+        const renderAchievementsList = () => {
+            const container = DOMElements.achievementsList;
+            const achievementsRef = ref(db, 'achievements');
+            onValue(achievementsRef, (snapshot) => {
+                container.innerHTML = '';
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        const achievement = child.val();
+                        const div = document.createElement('div');
+                        div.innerHTML = `<span>${achievement.text}</span> <button data-id="${child.key}" class="remove-link-btn">Remove</button>`;
+                        container.appendChild(div);
+                    });
+                }
+            });
+        };
 
         document.addEventListener("DOMContentLoaded", () => {
             initializeTheme();
-            DOMElements.mobileNavLinks.innerHTML = DOMElements.headerNav.innerHTML;
-
+            populateMobileNav();
+            startAchievementBanner();
             onAuthStateChanged(auth, user => {
                 updateUI().then(() => {
                     if (AppState.isSystemAdmin) {
@@ -1472,6 +1558,29 @@
                 logAction('Content Updated', `Updated page: ${title}`);
             } catch (error) {
                 showToast('Error saving content: ' + error.message, 'error');
+            }
+        });
+        
+        DOMElements.achievementForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = DOMElements.newAchievementText.value.trim();
+            if (text) {
+                const achievementsRef = ref(db, 'achievements');
+                const newAchievementRef = push(achievementsRef);
+                set(newAchievementRef, { text })
+                    .then(() => {
+                        showToast('Achievement added!', 'success');
+                        DOMElements.newAchievementText.value = '';
+                    })
+                    .catch(err => showToast('Error: ' + err.message, 'error'));
+            }
+        });
+
+        DOMElements.achievementsList.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-link-btn')) {
+                const id = e.target.dataset.id;
+                const achievementRef = ref(db, `achievements/${id}`);
+                remove(achievementRef).then(() => showToast('Achievement removed.', 'success'));
             }
         });
 
