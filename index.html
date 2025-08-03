@@ -1371,7 +1371,18 @@
         };
         const showContentPage = async (pageId, pageTitle) => {
             if (pageId === 'facebook_page') {
-                window.open('https://www.facebook.com/CogonNHSOfficial', '_blank');
+                const fbAppUrl = 'fb://page/100063714452969';
+                const fbWebUrl = 'https://www.facebook.com/CogonNHSOfficial';
+                
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                if (isMobile) {
+                    window.location.href = fbAppUrl;
+                    setTimeout(() => {
+                        window.open(fbWebUrl, '_blank');
+                    }, 2000);
+                } else {
+                    window.open(fbWebUrl, '_blank');
+                }
                 return;
             }
 
