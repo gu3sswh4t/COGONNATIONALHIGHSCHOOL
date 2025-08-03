@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>CNHS OFFICIAL</title>
+    <title>CNHS File Depot</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&family=Righteous&display=swap');
         
@@ -588,6 +588,34 @@
             opacity: 1;
             transform: translateY(0);
         }
+        .resource-links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .resource-link-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--glass-border);
+            border-radius: var(--border-radius-lg);
+            text-decoration: none;
+            color: var(--text-color);
+            transition: var(--transition-speed);
+        }
+        .resource-link-card:hover {
+            transform: scale(1.03);
+            box-shadow: var(--shadow-md);
+            background: var(--secondary-color);
+            color: var(--text-inverted);
+        }
+        .resource-link-card svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            flex-shrink: 0;
+        }
 
 
         @media (max-width: 1200px) {
@@ -721,7 +749,7 @@
         <div class="header-left">
             <div class="logo" id="mainLogo">
                 <img src="cogon.png" alt="CNHS Logo" class="header-logo-img">
-                CNHS <span>OFFICIAL</span>
+                CNHS <span>FILE DEPOT</span>
             </div>
             <label class="theme-switch" for="theme-toggle" title="Toggle theme">
                 <input type="checkbox" id="theme-toggle" />
@@ -773,9 +801,9 @@
     <main>
         <section id="landingPage" class="content-section landing-page">
             <div class="landing-content">
-                <h1>FILE DEPOT</h1>
-                <p>The official file repository of Cogon National High School.</p>
-                <button id="loginBtn" class="landing-btn">Sign in</button>
+                <h1>Cogon National High School<br>FILE DEPOT</h1>
+                <p>The official, secure, and centralized file repository for all teaching and non-teaching personnel.</p>
+                <button id="loginBtn" class="landing-btn">Login to Access Files</button>
                 <div class="video-container">
                     <iframe 
                         src="https://www.youtube.com/embed/xgzSkMGgU3U?autoplay=1&mute=1&loop=1&playlist=xgzSkMGgU3U&controls=0&showinfo=0&autohide=1&modestbranding=1" 
@@ -890,7 +918,7 @@
         </section>
     </main>
     <footer class="footer">
-        <p>© 2024 - <span id="currentYear"></span> Cogon National High School</p>
+        <p>© 2024 - <span id="currentYear"></span> Cogon National High School FILE DEPOT. All Rights Reserved.</p>
     </footer>
     <div id="confirmationModal" class="confirmation-modal">
         <div class="modal-content">
@@ -1361,11 +1389,17 @@
                     DOMElements.contentModalBody.innerHTML = `<div style="white-space: pre-wrap;">${content.text}</div>`;
                     DOMElements.contentModal.style.display = 'flex';
                 } else if (content.links) {
-                    let linksHTML = '<ul>';
+                    let linksHTML = '<div class="resource-links-container">';
                     for(const key in content.links) {
-                        linksHTML += `<li><a href="${content.links[key]}" target="_blank">${content.links[key]}</a></li>`;
+                        linksHTML += `
+                            <a href="${content.links[key].url}" target="_blank" class="resource-link-card">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+                                </svg>
+                                <span>${content.links[key].name}</span>
+                            </a>`;
                     }
-                    linksHTML += '</ul>';
+                    linksHTML += '</div>';
                     DOMElements.contentModalBody.innerHTML = linksHTML;
                     DOMElements.contentModal.style.display = 'flex';
                 } else {
@@ -1518,10 +1552,11 @@
                 let linksHTML = '<div id="resource-links-container">';
                 if (savedContent.links) {
                     for (const key in savedContent.links) {
-                        linksHTML += `<div><input type="text" value="${savedContent.links[key]}" readonly><button data-key="${key}" class="remove-link-btn">Remove</button></div>`;
+                        const link = savedContent.links[key];
+                        linksHTML += `<div class="link-admin-item"><input type="text" value="${link.name}" readonly><input type="text" value="${link.url}" readonly><button data-key="${key}" class="remove-link-btn">&times;</button></div>`;
                     }
                 }
-                linksHTML += '</div><input type="text" id="new-resource-link" placeholder="Add new website URL"><button type="button" id="add-resource-link-btn" class="form-button">Add Link</button>';
+                linksHTML += '</div><div class="link-admin-item"><input type="text" id="new-link-name" placeholder="Link Name"><input type="text" id="new-link-url" placeholder="Link URL"><button type="button" id="add-resource-link-btn" class="form-button">+</button></div>';
                 container.innerHTML = linksHTML;
             } else {
                 if (AppState.repoImages.length === 0) {
@@ -1557,9 +1592,12 @@
                 contentToSave.text = document.getElementById('history-editor').value;
             } else if (pageId === 'learning_links') {
                 const links = {};
-                document.querySelectorAll('#resource-links-container input').forEach(input => {
-                    if (input.value) {
-                        links[push(ref(db, `pageContent/${pageId}/links`)).key] = input.value;
+                document.querySelectorAll('#resource-links-container .link-admin-item').forEach(item => {
+                    const name = item.querySelector('input:nth-of-type(1)').value;
+                    const url = item.querySelector('input:nth-of-type(2)').value;
+                    if (name && url) {
+                        const key = item.dataset.key || push(ref(db, `pageContent/${pageId}/links`)).key;
+                        links[key] = { name, url };
                     }
                 });
                 contentToSave.links = links;
@@ -1602,13 +1640,16 @@
 
         DOMElements.contentEditorArea.addEventListener('click', (e) => {
             if (e.target.id === 'add-resource-link-btn') {
-                const input = document.getElementById('new-resource-link');
-                if (input.value) {
+                const nameInput = document.getElementById('new-link-name');
+                const urlInput = document.getElementById('new-link-url');
+                if (nameInput.value && urlInput.value) {
                     const container = document.getElementById('resource-links-container');
                     const newLinkDiv = document.createElement('div');
-                    newLinkDiv.innerHTML = `<input type="text" value="${input.value}" readonly><button class="remove-link-btn">Remove</button>`;
+                    newLinkDiv.classList.add('link-admin-item');
+                    newLinkDiv.innerHTML = `<input type="text" value="${nameInput.value}" readonly><input type="text" value="${urlInput.value}" readonly><button class="remove-link-btn">&times;</button>`;
                     container.appendChild(newLinkDiv);
-                    input.value = '';
+                    nameInput.value = '';
+                    urlInput.value = '';
                 }
             }
             if (e.target.classList.contains('remove-link-btn')) {
@@ -1801,10 +1842,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
