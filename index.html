@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>CNHS OFFICIAL</title>
+    <title>CNHS File Depot</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&family=Righteous&display=swap');
         
@@ -309,7 +309,7 @@
             border: none;
         }
 
-        #backToLandingBtn {
+        #backToLandingBtn, .modal-back-btn {
             position: absolute;
             top: 20px;
             left: 20px;
@@ -324,11 +324,11 @@
             cursor: pointer;
             transition: all var(--transition-speed);
         }
-        #backToLandingBtn:hover {
+        #backToLandingBtn:hover, .modal-back-btn:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: scale(1.1);
         }
-        #backToLandingBtn svg {
+        #backToLandingBtn svg, .modal-back-btn svg {
             width: 24px;
             height: 24px;
             stroke: var(--text-color);
@@ -801,8 +801,8 @@
     <header class="header">
         <div class="header-left">
             <div class="logo" id="mainLogo">
-                <img src="cogon.png" alt="CNHS Logo" class="header-logo-img">
-                CNHS <span>OFFICIAL</span>
+                <img src="https://raw.githubusercontent.com/gu3sswh4t/COGONNATIONALHIGHSCHOOL/main/images/cogon.png" alt="CNHS Logo" class="header-logo-img">
+                CNHS <span>FILE DEPOT</span>
             </div>
             <label class="theme-switch" for="theme-toggle" title="Toggle theme">
                 <input type="checkbox" id="theme-toggle" />
@@ -855,8 +855,8 @@
     <main>
         <section id="landingPage" class="content-section landing-page">
             <div class="landing-content">
-                <h1>FILE DEPOT</h1>
-                <p>The official file repository for all teaching and non-teaching personnel.</p>
+                <h1>Cogon National High School<br>FILE DEPOT</h1>
+                <p>The official, secure, and centralized file repository for all teaching and non-teaching personnel.</p>
                 <div class="landing-actions">
                     <button id="loginBtn" class="landing-btn">Teacher Login</button>
                     <button id="studentAccessBtn" class="landing-btn secondary">Student Access</button>
@@ -1025,7 +1025,7 @@
         </section>
     </main>
     <footer class="footer">
-        <p>©2024-<span id="currentYear"></span> Cogon National High School.</p>
+        <p>© 2024 - <span id="currentYear"></span> Cogon National High School.</p>
     </footer>
     <div id="confirmationModal" class="confirmation-modal">
         <div class="modal-content">
@@ -1039,6 +1039,11 @@
     </div>
     <div id="contentModal" class="modal">
         <div class="modal-content">
+            <button class="modal-back-btn" title="Go Back">
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
             <button class="modal-close-btn" id="contentModalCloseBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1050,6 +1055,11 @@
     </div>
     <div id="classFilesModal" class="modal">
         <div class="modal-content">
+            <button class="modal-back-btn" title="Go Back">
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
             <button class="modal-close-btn" id="classFilesModalCloseBtn">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -2468,6 +2478,14 @@
                 DOMElements.studentClassFilesContainer.innerHTML = '';
             }
         });
+        
+        DOMElements.studentClassFilesContainer.addEventListener('click', (e) => {
+            const downloadButton = e.target.closest('.download-btn');
+            if (downloadButton) {
+                const link = downloadButton.dataset.link;
+                window.open(link, '_blank');
+            }
+        });
 
 
         DOMElements.confirmActionBtn.addEventListener('click', () => {
@@ -2477,7 +2495,13 @@
             DOMElements.confirmationModal.style.display = 'none';
             AppState.actionHandler = null;
         });
+
+        // Add event listeners for new back buttons
+        document.querySelectorAll('.modal-back-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.closest('.modal').style.display = 'none';
+            });
+        });
     </script>
 </body>
 </html>
-
