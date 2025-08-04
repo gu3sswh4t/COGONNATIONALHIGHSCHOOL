@@ -1291,28 +1291,29 @@
                 document.body.className = 'logged-in-theme';
                 DOMElements.logoutBtn.style.display = 'block';
                 DOMElements.changePasswordBtn.style.display = 'block';
-                DOMElements.myClassesBtn.style.display = 'block';
                 DOMElements.currentUserIdContainer.style.display = 'flex';
                 
                 const userEmail = user.email;
                 const username = userEmail.split('@')[0];
                 DOMElements.currentUserId.textContent = username;
-
-                DOMElements.learningResourcesSection.style.display = 'block';
                 
                 if (AppState.isSystemAdmin) {
                     DOMElements.systemOverviewBtn.style.display = 'block';
                     DOMElements.systemAdminPanel.style.display = 'block';
-                    DOMElements.adminPanel.style.display = 'block';
                     DOMElements.headerNav.style.display = 'flex';
                     DOMElements.mobileMenuBtn.style.display = 'block';
-                    fetchAllMaterials();
                     fetchAllUsers();
                     renderAchievementsList();
+                    fetchAllMaterials(); 
+                    DOMElements.learningResourcesSection.style.display = 'block';
                 } else if (AppState.isAdmin) {
+                    DOMElements.myClassesBtn.style.display = 'block';
+                    DOMElements.learningResourcesSection.style.display = 'block';
                     DOMElements.adminPanel.style.display = 'block';
                     fetchAllMaterials();
                 } else {
+                    DOMElements.myClassesBtn.style.display = 'block';
+                    DOMElements.learningResourcesSection.style.display = 'block';
                     DOMElements.privateLinksSection.style.display = 'block';
                     fetchPublicMaterials();
                     fetchPrivateMaterials(user.uid);
