@@ -873,6 +873,11 @@
         </section>
 
         <section id="studentAccessSection" class="content-section" style="display: none;">
+             <button id="backFromStudentAccessBtn" class="modal-back-btn" title="Go Back">
+                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
              <h2>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>
                 Class File Access
@@ -1210,6 +1215,7 @@
             classFilesModalBody: document.getElementById('classFilesModalBody'),
             classFilesModalCloseBtn: document.getElementById('classFilesModalCloseBtn'),
             backFromClassesBtn: document.getElementById('backFromClassesBtn'),
+            backFromStudentAccessBtn: document.getElementById('backFromStudentAccessBtn'),
         };
         const AppState = {
             isAdmin: false,
@@ -1278,6 +1284,9 @@
             DOMElements.systemOverviewBtn.style.display = 'none';
             DOMElements.myClassesBtn.style.display = 'none';
             DOMElements.currentUserIdContainer.style.display = 'none';
+            DOMElements.headerNav.style.display = 'none';
+            DOMElements.mobileMenuBtn.style.display = 'none';
+
             if (user) {
                 document.body.className = 'logged-in-theme';
                 DOMElements.logoutBtn.style.display = 'block';
@@ -1291,7 +1300,16 @@
 
                 DOMElements.learningResourcesSection.style.display = 'block';
                 
-                if (AppState.isAdmin) {
+                if (AppState.isSystemAdmin) {
+                    DOMElements.systemOverviewBtn.style.display = 'block';
+                    DOMElements.systemAdminPanel.style.display = 'block';
+                    DOMElements.adminPanel.style.display = 'block';
+                    DOMElements.headerNav.style.display = 'flex';
+                    DOMElements.mobileMenuBtn.style.display = 'block';
+                    fetchAllMaterials();
+                    fetchAllUsers();
+                    renderAchievementsList();
+                } else if (AppState.isAdmin) {
                     DOMElements.adminPanel.style.display = 'block';
                     fetchAllMaterials();
                 } else {
@@ -1299,16 +1317,11 @@
                     fetchPublicMaterials();
                     fetchPrivateMaterials(user.uid);
                 }
-                
-                if (AppState.isSystemAdmin) {
-                    DOMElements.systemOverviewBtn.style.display = 'block';
-                    DOMElements.systemAdminPanel.style.display = 'block';
-                    fetchAllUsers();
-                    renderAchievementsList();
-                }
             } else {
                 document.body.className = 'logged-out-theme';
                 DOMElements.landingPage.style.display = 'flex';
+                DOMElements.headerNav.style.display = 'flex';
+                DOMElements.mobileMenuBtn.style.display = 'block';
             }
             DOMElements.loader.classList.add('hidden');
         };
@@ -1691,8 +1704,12 @@
         };
         const populateMobileNav = () => {
             const container = DOMElements.mobileNavLinks;
-            const navContent = DOMElements.headerNav.innerHTML;
-            container.innerHTML = navContent;
+            container.innerHTML = ''; 
+            
+            if (!auth.currentUser || AppState.isSystemAdmin) {
+                const navContent = DOMElements.headerNav.cloneNode(true);
+                container.appendChild(navContent);
+            }
 
             const controlsContainer = document.createElement('div');
             controlsContainer.style.marginTop = '30px';
@@ -1960,6 +1977,12 @@
             document.body.className = 'logged-in-theme';
         });
         DOMElements.backToLandingBtn.addEventListener('click', () => {
+            DOMElements.authSection.style.display = 'none';
+            DOMElements.studentAccessSection.style.display = 'none';
+            DOMElements.landingPage.style.display = 'flex';
+            document.body.className = 'logged-out-theme';
+        });
+        DOMElements.backFromStudentAccessBtn.addEventListener('click', () => {
             DOMElements.authSection.style.display = 'none';
             DOMElements.studentAccessSection.style.display = 'none';
             DOMElements.landingPage.style.display = 'flex';
