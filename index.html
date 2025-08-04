@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>CNHS File Depot</title>
+    <title>CNHS OFFICIAL</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&family=Righteous&display=swap');
         
@@ -673,7 +673,7 @@
 
 
         @media (max-width: 1200px) {
-            .header-nav { display: none; }
+            .header-nav { display: none !important; }
             #mobileMenuBtn {
                 display: block;
                 background: none;
@@ -803,7 +803,7 @@
         <div class="header-left">
             <div class="logo" id="mainLogo">
                 <img src="https://raw.githubusercontent.com/gu3sswh4t/COGONNATIONALHIGHSCHOOL/main/images/cogon.png" alt="CNHS Logo" class="header-logo-img">
-                CNHS <span>FILE DEPOT</span>
+                CNHS <span>OFFICIAL</span>
             </div>
             <label class="theme-switch" for="theme-toggle" title="Toggle theme">
                 <input type="checkbox" id="theme-toggle" />
@@ -856,8 +856,8 @@
     <main>
         <section id="landingPage" class="content-section landing-page">
             <div class="landing-content">
-                <h1>Cogon National High School<br>FILE DEPOT</h1>
-                <p>The official, secure, and centralized file repository for all teaching and non-teaching personnel.</p>
+                <h1>FILE DEPOT</h1>
+                <p>The official file repository of Cogon National High School.</p>
                 <div class="landing-actions">
                     <button id="loginBtn" class="landing-btn">Teacher Login</button>
                     <button id="studentAccessBtn" class="landing-btn secondary">Student Access</button>
@@ -1036,7 +1036,7 @@
         </section>
     </main>
     <footer class="footer">
-        <p>© 2024 - <span id="currentYear"></span> Cogon National High School.</p>
+        <p>©2024-<span id="currentYear"></span> Cogon National High School.</p>
     </footer>
     <div id="confirmationModal" class="confirmation-modal">
         <div class="modal-content">
@@ -1304,8 +1304,6 @@
                     DOMElements.mobileMenuBtn.style.display = 'block';
                     fetchAllUsers();
                     renderAchievementsList();
-                    fetchAllMaterials(); 
-                    DOMElements.learningResourcesSection.style.display = 'block';
                 } else if (AppState.isAdmin) {
                     DOMElements.myClassesBtn.style.display = 'block';
                     DOMElements.learningResourcesSection.style.display = 'block';
@@ -1357,7 +1355,7 @@
             if (usersSnapshot.exists()) {
                 usersSnapshot.forEach(userNode => {
                     userNode.forEach(child => {
-                        // Only add if it's not already public
+                        
                         if (!child.val().isPublic) {
                              allMaterials.push({ id: child.key, ownerId: userNode.key, owner: allUsers[userNode.key]?.email || 'Unknown', isPublic: false, ...child.val() });
                         }
@@ -1719,13 +1717,15 @@
             controlsContainer.style.gap = '15px';
 
             if (auth.currentUser) {
-                const myClassesBtn = DOMElements.myClassesBtn.cloneNode(true);
-                myClassesBtn.style.display = 'block';
-                myClassesBtn.addEventListener('click', () => {
-                     DOMElements.mobileNavOverlay.classList.remove('open');
-                     DOMElements.myClassesBtn.click();
-                });
-                controlsContainer.appendChild(myClassesBtn);
+                if (!AppState.isSystemAdmin) {
+                    const myClassesBtn = DOMElements.myClassesBtn.cloneNode(true);
+                    myClassesBtn.style.display = 'block';
+                    myClassesBtn.addEventListener('click', () => {
+                         DOMElements.mobileNavOverlay.classList.remove('open');
+                         DOMElements.myClassesBtn.click();
+                    });
+                    controlsContainer.appendChild(myClassesBtn);
+                }
 
                 const accountBtn = DOMElements.changePasswordBtn.cloneNode(true);
                 accountBtn.style.display = 'block';
@@ -1795,7 +1795,7 @@
             });
         };
 
-        // NEW: Classroom Functions
+    
         const generateAccessKey = async () => {
             const year = new Date().getFullYear();
             const randomNum = Math.floor(2000 + Math.random() * 8000);
@@ -1942,7 +1942,9 @@
             onAuthStateChanged(auth, user => {
                 updateUI().then(() => {
                     if (user) {
-                        renderMyClasses(user.uid);
+                        if (!AppState.isSystemAdmin) {
+                            renderMyClasses(user.uid);
+                        }
                     }
                     if (AppState.isSystemAdmin) {
                         populateContentManager();
@@ -1960,9 +1962,13 @@
             if (auth.currentUser) {
                 const allSections = [DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.updatePasswordSection, DOMElements.systemOverviewSection, DOMElements.authSection, DOMElements.classManagementSection, DOMElements.studentAccessSection];
                 allSections.forEach(el => el.style.display = 'none');
-                DOMElements.learningResourcesSection.style.display = 'block';
-                if(AppState.isAdmin) DOMElements.adminPanel.style.display = 'block';
-                if(AppState.isSystemAdmin) DOMElements.systemAdminPanel.style.display = 'block';
+                
+                if (AppState.isSystemAdmin) {
+                     DOMElements.systemAdminPanel.style.display = 'block';
+                } else {
+                    DOMElements.learningResourcesSection.style.display = 'block';
+                    if(AppState.isAdmin) DOMElements.adminPanel.style.display = 'block';
+                }
             } else {
                 location.reload();
             }
@@ -2392,7 +2398,7 @@
             }
         });
 
-        // NEW: Classroom Event Listeners
+     
         DOMElements.myClassesBtn.addEventListener('click', (e) => {
             e.preventDefault();
             const allSections = [DOMElements.landingPage, DOMElements.authSection, DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.learningResourcesSection, DOMElements.updatePasswordSection, DOMElements.systemOverviewSection, DOMElements.privateLinksSection];
@@ -2569,7 +2575,7 @@
             AppState.actionHandler = null;
         });
 
-        // Add event listeners for new back buttons
+
         document.querySelectorAll('.modal-back-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 btn.closest('.modal').style.display = 'none';
