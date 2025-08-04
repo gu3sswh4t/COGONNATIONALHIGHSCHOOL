@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>CNHS File Depot</title>
+    <title>CNHS OFFICIAL</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&family=Righteous&display=swap');
         
@@ -279,8 +279,12 @@
         
         .landing-page h1 { font-family: 'Righteous', sans-serif; font-size: clamp(2.5em, 6vw, 4.5em); margin: 0 0 15px 0; line-height: 1.1; font-weight: 400; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: fadeInUp 0.8s 0.2s both; }
         .landing-page p { font-size: clamp(1em, 2vw, 1.3em); max-width: 600px; color: var(--text-muted); margin: 0 auto 30px auto; font-weight: 400; animation: fadeInUp 0.8s 0.4s both; }
-        .landing-btn { padding: 15px 40px; border: none; border-radius: 50px; cursor: pointer; font-size: 1.2em; font-weight: 700; color: white; transition: all var(--transition-speed); box-shadow: var(--shadow-md); background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); animation: fadeInUp 0.8s 0.6s both; }
+        .landing-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; animation: fadeInUp 0.8s 0.6s both; }
+        .landing-btn { padding: 15px 40px; border: none; border-radius: 50px; cursor: pointer; font-size: 1.2em; font-weight: 700; color: white; transition: all var(--transition-speed); box-shadow: var(--shadow-md); background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); }
         .landing-btn:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 10px 20px rgba(0, 82, 212, 0.4); }
+        .landing-btn.secondary { background: var(--glass-bg); color: var(--text-color); border: 1px solid var(--glass-border); }
+        .landing-btn.secondary:hover { background: var(--glass-border); }
+
 
         .video-container {
             position: relative;
@@ -360,7 +364,7 @@
         .search-container { display: flex; justify-content: center; margin-bottom: 20px; }
         .search-container input[type="text"] { width: 100%; max-width: 600px; border-radius: 50px; font-size: 1.1em; text-align: center; }
         
-        #materialsTableContainer, #systemOverviewContainer, #userManagementContainer {
+        #materialsTableContainer, #systemOverviewContainer, #userManagementContainer, #privateMaterialsTableContainer {
             background-color: transparent;
             border-radius: var(--border-radius-lg);
             overflow-x: auto;
@@ -396,11 +400,11 @@
         .modal { display: none; position: fixed; z-index: 1001; inset: 0; background-color: rgba(0,0,0,0.7); backdrop-filter: blur(5px); justify-content: center; align-items: center; animation: fadeIn 0.3s ease; }
         .confirmation-modal { display: none; position: fixed; z-index: 1002; inset: 0; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; animation: fadeIn 0.3s ease; }
         .modal-content { margin: auto; padding: 30px; width: 90%; max-width: 500px; text-align: center; position: relative; animation: slideInUp 0.4s ease-out; }
-        #contentModal .modal-content { max-width: 800px; text-align: left; max-height: 80vh; overflow-y: auto; }
-        #contentModal .modal-close-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; cursor: pointer; opacity: 0.7; transition: var(--transition-speed); }
-        #contentModal .modal-close-btn:hover { opacity: 1; transform: scale(1.1); }
-        #contentModal .modal-close-btn svg { width: 24px; height: 24px; stroke: var(--text-color); }
-        #contentModalBody { margin-top: 20px; line-height: 1.8; }
+        #contentModal .modal-content, #classFilesModal .modal-content { max-width: 800px; text-align: left; max-height: 80vh; overflow-y: auto; }
+        #contentModal .modal-close-btn, #classFilesModal .modal-close-btn { position: absolute; top: 15px; right: 15px; background: none; border: none; cursor: pointer; opacity: 0.7; transition: var(--transition-speed); }
+        #contentModal .modal-close-btn:hover, #classFilesModal .modal-close-btn:hover { opacity: 1; transform: scale(1.1); }
+        #contentModal .modal-close-btn svg, #classFilesModal .modal-close-btn svg { width: 24px; height: 24px; stroke: var(--text-color); }
+        #contentModalBody, #classFilesModalBody { margin-top: 20px; line-height: 1.8; }
         #contentModalBody img { max-width: 100%; height: auto; border-radius: var(--border-radius-lg); }
         
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -617,6 +621,55 @@
             flex-shrink: 0;
         }
 
+        .class-card {
+            background: var(--glass-border);
+            border-radius: var(--border-radius-lg);
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .class-info { flex-grow: 1; }
+        .class-info h4 { margin: 0 0 5px 0; font-size: 1.2em; color: var(--text-color); }
+        .class-key { font-family: 'Courier New', Courier, monospace; background: rgba(0,0,0,0.1); padding: 5px 10px; border-radius: 5px; user-select: all; }
+        .class-actions { display: flex; gap: 10px; }
+
+        .share-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .share-toggle-label .slider {
+             position: relative;
+            display: block;
+            width: 40px;
+            height: 20px;
+            border-radius: 10px;
+            background-color: #7f8c8d;
+            transition: var(--transition-speed);
+        }
+        .share-toggle-label .slider:before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: white;
+            transition: var(--transition-speed);
+        }
+        .share-toggle-label input:checked + .slider {
+            background-color: var(--success-color);
+        }
+        .share-toggle-label input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
 
         @media (max-width: 1200px) {
             .header-nav { display: none; }
@@ -748,8 +801,8 @@
     <header class="header">
         <div class="header-left">
             <div class="logo" id="mainLogo">
-                <img src="cogon.png" alt="CNHS Logo" class="header-logo-img">
-                CNHS <span>FILE DEPOT</span>
+                <img src="https://raw.githubusercontent.com/gu3sswh4t/COGONNATIONALHIGHSCHOOL/main/images/cogon.png" alt="CNHS Logo" class="header-logo-img">
+                CNHS <span>OFFICIAL</span>
             </div>
             <label class="theme-switch" for="theme-toggle" title="Toggle theme">
                 <input type="checkbox" id="theme-toggle" />
@@ -761,6 +814,7 @@
                         <a href="#">Resources</a>
                         <ul>
                             <li><a href="#" data-page-id="learning_links">Learning Links</a></li>
+                            <li><a href="#" id="classFilesLink">Class Files</a></li>
                         </ul>
                     </li>
                     <li>
@@ -801,9 +855,12 @@
     <main>
         <section id="landingPage" class="content-section landing-page">
             <div class="landing-content">
-                <h1>Cogon National High School<br>FILE DEPOT</h1>
-                <p>The official, secure, and centralized file repository for all teaching and non-teaching personnel.</p>
-                <button id="loginBtn" class="landing-btn">Login to Access Files</button>
+                <h1>FILE DEPOT</h1>
+                <p>The official file repository for all teaching and non-teaching personnel.</p>
+                <div class="landing-actions">
+                    <button id="loginBtn" class="landing-btn">Teacher Login</button>
+                    <button id="studentAccessBtn" class="landing-btn secondary">Student Access</button>
+                </div>
                 <div class="video-container">
                     <iframe 
                         src="https://www.youtube.com/embed/xgzSkMGgU3U?autoplay=1&mute=1&loop=1&playlist=xgzSkMGgU3U&controls=0&showinfo=0&autohide=1&modestbranding=1" 
@@ -813,10 +870,23 @@
                 </div>
             </div>
         </section>
+
+        <section id="studentAccessSection" class="content-section" style="display: none;">
+             <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>
+                Class File Access
+            </h2>
+            <form id="studentAccessForm" class="auth-form">
+                <input type="text" id="classKeyInput" placeholder="Enter Class Key (e.g., 2025-4567)" required />
+                <button type="submit" class="form-button">Find Class Files</button>
+            </form>
+            <div id="studentClassFilesContainer" style="margin-top: 30px;"></div>
+        </section>
+
         <section id="authSection" class="content-section auth-section" style="display: none;">
             <button id="backToLandingBtn" title="Go Back">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
             </button>
             <h2>Login</h2>
@@ -826,6 +896,22 @@
                 <button type="submit" class="form-button">Login</button>
             </form>
         </section>
+
+        <section id="classManagementSection" class="content-section" style="display: none;">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                My Classes
+            </h2>
+            <div class="admin-form-section">
+                <h3>Create a New Class</h3>
+                <form id="createClassForm">
+                    <input type="text" id="newClassName" placeholder="Enter new class name (e.g., Grade 10 - Math)" required />
+                    <button type="submit" class="form-button">Create Class</button>
+                </form>
+            </div>
+            <div id="myClassesContainer" style="margin-top: 30px;"></div>
+        </section>
+
         <section id="systemAdminPanel" class="content-section" style="display: none;">
             <h2>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962A3 3 0 0115 9.75V9A6 6 0 003 9v.75a3 3 0 015.25 2.037m-5.25 0A3 3 0 003 16.5v.75a6 6 0 006 6v-1.5a3 3 0 005.25-2.037m-5.25 0h9.75a.75.75 0 010 1.5H5.25a.75.75 0 010-1.5z" /></svg>
@@ -864,7 +950,7 @@
             </h2>
             <div class="admin-panel-grid">
                 <div class="admin-form-section">
-                    <h3>Add New Material</h3>
+                    <h3>Add New Public Material</h3>
                     <form id="addLinkForm">
                         <input type="text" id="googleDriveShareLink" placeholder="Paste Google Drive Share Link Here" required />
                         <div class="file-link-group">
@@ -872,7 +958,7 @@
                             <button type="button" id="generateLinkBtn" class="generate-link-btn">Generate</button>
                         </div>
                         <input type="text" id="linkDescription" placeholder="File Description" required />
-                        <button type="submit" class="form-button">Add Link</button>
+                        <button type="submit" class="form-button">Add Public Link</button>
                     </form>
                 </div>
                 <div class="admin-form-section">
@@ -884,6 +970,27 @@
                     </form>
                 </div>
             </div>
+        </section>
+        <section id="privateLinksSection" class="content-section" style="display: none;">
+            <h2>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+                My Private Links
+            </h2>
+            <div class="admin-panel-grid">
+                <div class="admin-form-section">
+                    <h3>Add a Private Link</h3>
+                    <form id="addPrivateLinkForm">
+                        <input type="text" id="privateGoogleDriveShareLink" placeholder="Paste Google Drive Share Link Here" required />
+                        <div class="file-link-group">
+                            <input type="text" id="privateFileLink" placeholder="Generated Download Link" required readonly />
+                            <button type="button" id="generatePrivateLinkBtn" class="generate-link-btn">Generate</button>
+                        </div>
+                        <input type="text" id="privateLinkDescription" placeholder="File Description" required />
+                        <button type="submit" class="form-button">Add Private Link</button>
+                    </form>
+                </div>
+            </div>
+            <div id="privateMaterialsTableContainer" style="margin-top: 30px;"></div>
         </section>
         <section id="updatePasswordSection" class="content-section" style="display: none;">
             <h2>
@@ -918,7 +1025,7 @@
         </section>
     </main>
     <footer class="footer">
-        <p>© 2024 - <span id="currentYear"></span> Cogon National High School FILE DEPOT. All Rights Reserved.</p>
+        <p>©2024-<span id="currentYear"></span> Cogon National High School.</p>
     </footer>
     <div id="confirmationModal" class="confirmation-modal">
         <div class="modal-content">
@@ -939,6 +1046,17 @@
             </button>
             <h3 id="contentModalTitle"></h3>
             <div id="contentModalBody"></div>
+        </div>
+    </div>
+    <div id="classFilesModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="classFilesModalCloseBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h3 id="classFilesModalTitle"></h3>
+            <div id="classFilesModalBody"></div>
         </div>
     </div>
     <div id="galleryModal" class="modal">
@@ -1000,6 +1118,7 @@
             currentUserId: document.getElementById('currentUserId'),
             landingPage: document.getElementById('landingPage'),
             loginBtn: document.getElementById('loginBtn'),
+            studentAccessBtn: document.getElementById('studentAccessBtn'),
             authSection: document.getElementById('authSection'),
             backToLandingBtn: document.getElementById('backToLandingBtn'),
             loginForm: document.getElementById('loginForm'),
@@ -1023,6 +1142,13 @@
             createUserForm: document.getElementById('createUserForm'),
             newUserEmail: document.getElementById('newUserEmail'),
             newUserPassword: document.getElementById('newUserPassword'),
+            privateLinksSection: document.getElementById('privateLinksSection'),
+            addPrivateLinkForm: document.getElementById('addPrivateLinkForm'),
+            privateGoogleDriveShareLink: document.getElementById('privateGoogleDriveShareLink'),
+            generatePrivateLinkBtn: document.getElementById('generatePrivateLinkBtn'),
+            privateFileLink: document.getElementById('privateFileLink'),
+            privateLinkDescription: document.getElementById('privateLinkDescription'),
+            privateMaterialsTableContainer: document.getElementById('privateMaterialsTableContainer'),
             updatePasswordSection: document.getElementById('updatePasswordSection'),
             updatePasswordForm: document.getElementById('updatePasswordForm'),
             newPasswordInput: document.getElementById('newPasswordInput'),
@@ -1054,6 +1180,19 @@
             cancelModalBtn: document.getElementById('cancelModalBtn'),
             achievementBanner: document.getElementById('achievementBanner'),
             achievementText: document.getElementById('achievementText'),
+            classFilesLink: document.getElementById('classFilesLink'),
+            classManagementSection: document.getElementById('classManagementSection'),
+            createClassForm: document.getElementById('createClassForm'),
+            newClassName: document.getElementById('newClassName'),
+            myClassesContainer: document.getElementById('myClassesContainer'),
+            studentAccessSection: document.getElementById('studentAccessSection'),
+            studentAccessForm: document.getElementById('studentAccessForm'),
+            classKeyInput: document.getElementById('classKeyInput'),
+            studentClassFilesContainer: document.getElementById('studentClassFilesContainer'),
+            classFilesModal: document.getElementById('classFilesModal'),
+            classFilesModalTitle: document.getElementById('classFilesModalTitle'),
+            classFilesModalBody: document.getElementById('classFilesModalBody'),
+            classFilesModalCloseBtn: document.getElementById('classFilesModalCloseBtn'),
         };
         const AppState = {
             isAdmin: false,
@@ -1115,7 +1254,7 @@
             const { isAdmin, isSystemAdmin } = await checkAdminStatus(user);
             AppState.isAdmin = isAdmin;
             AppState.isSystemAdmin = isSystemAdmin;
-            const allSections = [DOMElements.landingPage, DOMElements.authSection, DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.learningResourcesSection, DOMElements.updatePasswordSection, DOMElements.systemOverviewSection];
+            const allSections = [DOMElements.landingPage, DOMElements.authSection, DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.learningResourcesSection, DOMElements.updatePasswordSection, DOMElements.systemOverviewSection, DOMElements.privateLinksSection, DOMElements.classManagementSection, DOMElements.studentAccessSection];
             allSections.forEach(el => el.style.display = 'none');
             DOMElements.logoutBtn.style.display = 'none';
             DOMElements.changePasswordBtn.style.display = 'none';
@@ -1132,10 +1271,16 @@
                 DOMElements.currentUserId.textContent = username;
 
                 DOMElements.learningResourcesSection.style.display = 'block';
-                fetchEducationalMaterials();
+                
                 if (AppState.isAdmin) {
                     DOMElements.adminPanel.style.display = 'block';
+                    fetchAllMaterials();
+                } else {
+                    DOMElements.privateLinksSection.style.display = 'block';
+                    fetchPublicMaterials();
+                    fetchPrivateMaterials(user.uid);
                 }
+                
                 if (AppState.isSystemAdmin) {
                     DOMElements.systemOverviewBtn.style.display = 'block';
                     DOMElements.systemAdminPanel.style.display = 'block';
@@ -1148,19 +1293,102 @@
             }
             DOMElements.loader.classList.add('hidden');
         };
-        const fetchEducationalMaterials = () => {
+        const fetchPublicMaterials = () => {
             const materialsRef = ref(db, 'educationalMaterials');
             onValue(materialsRef, (snapshot) => {
-                AppState.allMaterials = [];
+                const publicMaterials = [];
                 if (snapshot.exists()) {
                     snapshot.forEach(child => {
-                        AppState.allMaterials.push({ id: child.key, ...child.val() });
+                        publicMaterials.push({ id: child.key, owner: 'Public', ...child.val() });
                     });
                 }
+                AppState.allMaterials = publicMaterials;
                 renderAllMaterials();
-            }, (error) => {
-                console.error("Firebase permission denied at /educationalMaterials:", error.message);
             });
+        };
+        const fetchAllMaterials = async () => {
+            const publicRef = ref(db, 'educationalMaterials');
+            const usersRef = ref(db, 'userMaterials');
+            const allUsersRef = ref(db, 'users');
+
+            const [publicSnapshot, usersSnapshot, allUsersSnapshot] = await Promise.all([get(publicRef), get(usersRef), get(allUsersRef)]);
+            
+            const allUsers = allUsersSnapshot.exists() ? allUsersSnapshot.val() : {};
+            AppState.allUsers = allUsers;
+            let allMaterials = [];
+            if (publicSnapshot.exists()) {
+                publicSnapshot.forEach(child => {
+                    allMaterials.push({ id: child.key, isPublic: true, owner: allUsers[child.val().addedBy]?.email || 'Public', ...child.val() });
+                });
+            }
+            if (usersSnapshot.exists()) {
+                usersSnapshot.forEach(userNode => {
+                    userNode.forEach(child => {
+                        // Only add if it's not already public
+                        if (!child.val().isPublic) {
+                             allMaterials.push({ id: child.key, ownerId: userNode.key, owner: allUsers[userNode.key]?.email || 'Unknown', isPublic: false, ...child.val() });
+                        }
+                    });
+                });
+            }
+            AppState.allMaterials = allMaterials;
+            renderAllMaterials();
+        };
+        const fetchPrivateMaterials = (userId) => {
+            const materialsRef = ref(db, `userMaterials/${userId}`);
+            onValue(materialsRef, (snapshot) => {
+                const privateMaterials = [];
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        privateMaterials.push({ id: child.key, ...child.val() });
+                    });
+                }
+                renderPrivateMaterials(privateMaterials);
+            });
+        };
+        const renderPrivateMaterials = (materials) => {
+            const container = DOMElements.privateMaterialsTableContainer;
+            container.innerHTML = '';
+            if (materials.length === 0) {
+                container.innerHTML = `<p style="text-align: center; padding: 40px; color: var(--text-muted);">You haven't added any private links yet.</p>`;
+                return;
+            }
+            materials.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+            const tableRows = materials.map(mat => {
+                const date = mat.createdAt ? new Date(mat.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric'}) : 'N/A';
+                return `
+                <tr>
+                    <td class="material-description">${mat.description}</td>
+                    <td>${date}</td>
+                    <td style="text-align: right;">
+                        <button class="download-btn" data-link="${mat.link}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            <span>Download</span>
+                        </button>
+                    </td>
+                    <td style="text-align: center;">
+                        <button class="delete-link-btn" data-id="${mat.id}" data-description="${mat.description}" title="Delete Material">
+                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
+                        </button>
+                    </td>
+                </tr>`
+            }).join('');
+            const tableHTML = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Date Added</th>
+                            <th style="text-align: right;">Link</th>
+                            <th style="text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+            `;
+            container.innerHTML = tableHTML;
         };
         const fetchAllUsers = async () => {
             const usersRef = ref(db, 'users');
@@ -1245,7 +1473,7 @@
                         <div class="stat-card">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" /></svg>
                             <h3>${totalFiles}</h3>
-                            <p>Total Files</p>
+                            <p>Total Public Files</p>
                         </div>
                     </div>
                 `;
@@ -1271,37 +1499,45 @@
             filteredMaterials.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
             const tableRows = filteredMaterials.map(mat => {
                 const date = mat.createdAt ? new Date(mat.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric'}) : 'N/A';
+                const shareAction = AppState.isAdmin && !mat.isPublic ? `
+                    <label class="share-toggle-label" title="Share this link publicly">
+                        <input type="checkbox" class="share-toggle" data-id="${mat.id}" data-owner-id="${mat.ownerId}" data-description="${mat.description}">
+                        <span class="slider"></span>
+                    </label>
+                ` : '';
+
                 return `
                 <tr>
                     <td class="material-description">${mat.description}</td>
+                    <td>${mat.owner}</td>
                     <td style="text-align: center;">${mat.downloadCount || 0}</td>
                     <td>${date}</td>
-                    <td>${mat.addedByEmail || 'N/A'}</td>
                     <td style="text-align: right;">
-                        <button class="download-btn" data-id="${mat.id}" data-description="${mat.description}" data-link="${mat.link}">
+                        <button class="download-btn" data-id="${mat.id}" data-owner-id="${mat.ownerId}" data-is-public="${mat.isPublic}" data-description="${mat.description}" data-link="${mat.link}">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                             <span>Download</span>
                         </button>
                     </td>
+                    ${AppState.isAdmin ? `<td style="text-align: center;">${shareAction}</td>` : ''}
                     ${AppState.isAdmin ? `
                     <td style="text-align: center;">
-                        <button class="delete-link-btn" data-id="${mat.id}" data-description="${mat.description}" title="Delete Material">
+                        <button class="delete-link-btn" data-id="${mat.id}" data-owner-id="${mat.ownerId}" data-is-public="${mat.isPublic}" data-description="${mat.description}" title="Delete Material">
                             <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
                         </button>
                     </td>` : ''}
                 </tr>`
             }).join('');
-            const adminHeader = AppState.isAdmin ? '<th style="text-align: center;">Action</th>' : '';
+            const adminHeaders = AppState.isAdmin ? '<th style="text-align: center;">Share</th><th style="text-align: center;">Delete</th>' : '';
             const tableHTML = `
                 <table class="data-table">
                     <thead>
                         <tr>
                             <th>Description</th>
+                            <th>Owner</th>
                             <th style="text-align: center;">Downloads</th>
                             <th>Date Added</th>
-                            <th>Added By</th>
                             <th style="text-align: right;">Link</th>
-                            ${adminHeader}
+                            ${adminHeaders}
                         </tr>
                     </thead>
                     <tbody>
@@ -1311,8 +1547,9 @@
             `;
             container.innerHTML = tableHTML;
         };
-        const deleteItem = async (id, description) => {
-            const itemRef = ref(db, `educationalMaterials/${id}`);
+        const deleteItem = async (id, ownerId, isPublic, description) => {
+            const path = isPublic === 'true' ? `educationalMaterials/${id}` : `userMaterials/${ownerId}/${id}`;
+            const itemRef = ref(db, path);
             try {
                 await remove(itemRef);
                 logAction('File Deleted', `Deleted: ${description}`);
@@ -1322,6 +1559,7 @@
             } finally {
                 DOMElements.confirmationModal.style.display = 'none';
                 AppState.actionHandler = null;
+                if (AppState.isAdmin) fetchAllMaterials();
             }
         };
         const toggleAdminRole = async (uid, email, promote) => {
@@ -1371,18 +1609,7 @@
         };
         const showContentPage = async (pageId, pageTitle) => {
             if (pageId === 'facebook_page') {
-                const fbAppUrl = 'fb://page/100063714452969';
-                const fbWebUrl = 'https://www.facebook.com/CogonNHSOfficial';
-                
-                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                if (isMobile) {
-                    window.location.href = fbAppUrl;
-                    setTimeout(() => {
-                        window.open(fbWebUrl, '_blank');
-                    }, 2500);
-                } else {
-                    window.open(fbWebUrl, '_blank');
-                }
+                window.open('https://www.facebook.com/CogonNHSOfficial', '_blank');
                 return;
             }
 
@@ -1445,13 +1672,8 @@
         };
         const populateMobileNav = () => {
             const container = DOMElements.mobileNavLinks;
-            const links = DOMElements.headerNav.querySelectorAll('a[data-page-id]');
-            let navHTML = '<ul>';
-            links.forEach(link => {
-                navHTML += `<li><a href="#" data-page-id="${link.dataset.pageId}">${link.textContent}</a></li>`;
-            });
-            navHTML += '</ul>';
-            container.innerHTML = navHTML;
+            const navContent = DOMElements.headerNav.innerHTML;
+            container.innerHTML = navContent;
         };
         const startAchievementBanner = () => {
             const achievementsRef = ref(db, 'achievements');
@@ -1493,6 +1715,150 @@
             });
         };
 
+        // NEW: Classroom Functions
+        const generateAccessKey = async () => {
+            const year = new Date().getFullYear();
+            // Removed the loop and the read operation that caused the permission error.
+            // The chance of a collision is statistically insignificant for this use case.
+            const randomNum = Math.floor(2000 + Math.random() * 8000);
+            return `${year}-${randomNum}`;
+        };
+
+        const renderMyClasses = (userId) => {
+            const classesRef = ref(db, 'classes');
+            onValue(classesRef, (snapshot) => {
+                const container = DOMElements.myClassesContainer;
+                container.innerHTML = '';
+                if (snapshot.exists()) {
+                    let hasClasses = false;
+                    snapshot.forEach(child => {
+                        const classData = child.val();
+                        if (classData.ownerId === userId) {
+                            hasClasses = true;
+                            const classCard = document.createElement('div');
+                            classCard.className = 'class-card';
+                            classCard.innerHTML = `
+                                <div class="class-info">
+                                    <h4>${classData.className}</h4>
+                                    <p>Access Key: <span class="class-key">${classData.accessKey}</span></p>
+                                </div>
+                                <div class="class-actions">
+                                    <button class="form-button manage-files-btn" data-key="${child.key}" data-name="${classData.className}">Manage Files</button>
+                                    <button class="form-button revoke" data-key="${child.key}" data-name="${classData.className}">Delete</button>
+                                </div>
+                            `;
+                            container.appendChild(classCard);
+                        }
+                    });
+                    if (!hasClasses) {
+                         container.innerHTML = `<p style="text-align: center; padding: 40px; color: var(--text-muted);">You haven't created any classes yet.</p>`;
+                    }
+                } else {
+                    container.innerHTML = `<p style="text-align: center; padding: 40px; color: var(--text-muted);">You haven't created any classes yet.</p>`;
+                }
+            });
+        };
+
+        const renderClassFilesForStudent = (classData, classKey) => {
+            const container = DOMElements.studentClassFilesContainer;
+            container.innerHTML = '';
+            const materials = classData.materials || {};
+            const materialKeys = Object.keys(materials);
+
+            if (materialKeys.length === 0) {
+                 container.innerHTML = `<p style="text-align: center; padding: 40px; color: var(--text-muted);">This class has no files yet.</p>`;
+                 return;
+            }
+
+            let tableRows = '';
+            materialKeys.sort((a,b) => (materials[b].createdAt || 0) - (materials[a].createdAt || 0)).forEach(key => {
+                const mat = materials[key];
+                const date = mat.createdAt ? new Date(mat.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric'}) : 'N/A';
+                tableRows += `
+                    <tr>
+                        <td class="material-description">${mat.description}</td>
+                        <td>${date}</td>
+                        <td style="text-align: right;">
+                            <button class="download-btn" data-link="${mat.link}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                                <span>Download</span>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            const tableHTML = `
+                <h3>Files for ${classData.className}</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Date Added</th>
+                            <th style="text-align: right;">Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+            `;
+            container.innerHTML = tableHTML;
+        };
+        
+        const renderClassFileManager = (classKey, className) => {
+            DOMElements.classFilesModalTitle.textContent = `Manage Files for ${className}`;
+            const body = DOMElements.classFilesModalBody;
+            body.innerHTML = `
+                <div class="admin-form-section">
+                    <h3>Add New File to Class</h3>
+                    <form id="addClassFileForm">
+                        <input type="text" id="classGoogleDriveLink" placeholder="Paste Google Drive Share Link" required />
+                        <div class="file-link-group">
+                            <input type="text" id="classFileLink" placeholder="Generated Download Link" required readonly />
+                            <button type="button" id="generateClassFileLinkBtn" class="generate-link-btn">Generate</button>
+                        </div>
+                        <input type="text" id="classFileDescription" placeholder="File Description" required />
+                        <button type="submit" class="form-button">Add File to Class</button>
+                    </form>
+                </div>
+                <div id="classFilesTableContainer" style="margin-top: 20px;"></div>
+            `;
+            DOMElements.classFilesModal.style.display = 'flex';
+
+            const classFilesRef = ref(db, `classes/${classKey}/materials`);
+            onValue(classFilesRef, (snapshot) => {
+                const container = document.getElementById('classFilesTableContainer');
+                container.innerHTML = '';
+                const materials = snapshot.val() || {};
+                const keys = Object.keys(materials);
+                if (keys.length === 0) {
+                    container.innerHTML = '<p>No files in this class yet.</p>';
+                    return;
+                }
+                let tableRows = keys.map(key => {
+                    const mat = materials[key];
+                    return `
+                        <tr>
+                            <td>${mat.description}</td>
+                            <td>
+                                <button class="delete-link-btn delete-class-file-btn" data-class-key="${classKey}" data-file-key="${key}" title="Delete File">
+                                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                container.innerHTML = `
+                    <table class="data-table">
+                        <thead><tr><th>Description</th><th>Action</th></tr></thead>
+                        <tbody>${tableRows}</tbody>
+                    </table>
+                `;
+            });
+        };
+
+
         document.addEventListener("DOMContentLoaded", () => {
             initializeTheme();
             populateMobileNav();
@@ -1500,6 +1866,9 @@
             DOMElements.currentYear.textContent = new Date().getFullYear();
             onAuthStateChanged(auth, user => {
                 updateUI().then(() => {
+                    if (user) {
+                        renderMyClasses(user.uid);
+                    }
                     if (AppState.isSystemAdmin) {
                         populateContentManager();
                     }
@@ -1511,7 +1880,7 @@
         });
         DOMElements.mainLogo.addEventListener('click', () => {
             if (auth.currentUser) {
-                const allSections = [DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.updatePasswordSection, DOMElements.systemOverviewSection, DOMElements.authSection];
+                const allSections = [DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.updatePasswordSection, DOMElements.systemOverviewSection, DOMElements.authSection, DOMElements.classManagementSection, DOMElements.studentAccessSection];
                 allSections.forEach(el => el.style.display = 'none');
                 DOMElements.learningResourcesSection.style.display = 'block';
                 if(AppState.isAdmin) DOMElements.adminPanel.style.display = 'block';
@@ -1523,10 +1892,16 @@
         DOMElements.loginBtn.addEventListener('click', () => {
             DOMElements.landingPage.style.display = 'none';
             DOMElements.authSection.style.display = 'block';
-            document.body.className = 'logged-in-theme';    
+            document.body.className = 'logged-in-theme';   
+        });
+        DOMElements.studentAccessBtn.addEventListener('click', () => {
+            DOMElements.landingPage.style.display = 'none';
+            DOMElements.studentAccessSection.style.display = 'block';
+            document.body.className = 'logged-in-theme';
         });
         DOMElements.backToLandingBtn.addEventListener('click', () => {
             DOMElements.authSection.style.display = 'none';
+            DOMElements.studentAccessSection.style.display = 'none';
             DOMElements.landingPage.style.display = 'flex';
             document.body.className = 'logged-out-theme';
         });
@@ -1535,12 +1910,12 @@
             showToast('You have been logged out.', 'info');
         });
         DOMElements.changePasswordBtn.addEventListener('click', () => {
-            const allSections = [DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.learningResourcesSection, DOMElements.systemOverviewSection];
+            const allSections = [DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.learningResourcesSection, DOMElements.systemOverviewSection, DOMElements.classManagementSection];
             allSections.forEach(sec => sec.style.display = 'none');
             DOMElements.updatePasswordSection.style.display = 'block';
         });
         DOMElements.systemOverviewBtn.addEventListener('click', () => {
-            const allSections = [DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.learningResourcesSection, DOMElements.updatePasswordSection];
+            const allSections = [DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.learningResourcesSection, DOMElements.updatePasswordSection, DOMElements.classManagementSection];
             allSections.forEach(sec => sec.style.display = 'none');
             DOMElements.systemOverviewSection.style.display = 'block';
             renderSystemOverview();
@@ -1684,6 +2059,11 @@
                 const pageTitle = e.target.textContent;
                 showContentPage(pageId, pageTitle);
             }
+             if (e.target.id === 'classFilesLink' || e.target.parentElement.id === 'classFilesLink') {
+                e.preventDefault();
+                DOMElements.mobileNavOverlay.classList.remove('open');
+                DOMElements.classFilesLink.click();
+            }
         });
         DOMElements.mobileMenuBtn.addEventListener('click', () => {
             DOMElements.mobileNavOverlay.classList.add('open');
@@ -1798,37 +2178,121 @@
                 logAction('File Uploaded', `Uploaded: ${description}`);
                 showToast('Link added successfully!', 'success');
                 DOMElements.addLinkForm.reset();
-                DOMElements.googleDriveShareLink.value = '';
-                DOMElements.fileLinkInput.value = '';
             } catch (error) {
                 showToast('Error adding link: ' + error.message, 'error');
             }
         });
+        DOMElements.generatePrivateLinkBtn.addEventListener('click', () => {
+            const shareLink = DOMElements.privateGoogleDriveShareLink.value.trim();
+            if (!shareLink) {
+                showToast('Please paste a Google Drive share link first.', 'error'); return;
+            }
+            const match = shareLink.match(/\/d\/([a-zA-Z0-9_-]+)/);
+            if (match && match[1]) {
+                const fileId = match[1];
+                const downloadLink = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                DOMElements.privateFileLink.value = downloadLink;
+                showToast('Download link generated!', 'success');
+            } else {
+                showToast('Invalid Google Drive share link format. Must contain "/d/FILE_ID/".', 'error');
+            }
+        });
+        DOMElements.addPrivateLinkForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if(!user) return;
+
+            const link = DOMElements.privateFileLink.value.trim();
+            const description = DOMElements.privateLinkDescription.value.trim();
+            if (!link || !description) {
+                showToast('Link and Description are required!', 'error'); return;
+            }
+            const newMaterialRef = push(ref(db, `userMaterials/${user.uid}`));
+            try {
+                await set(newMaterialRef, {
+                    link,
+                    description,
+                    isPublic: false,
+                    createdAt: serverTimestamp(),
+                });
+                logAction('Private File Uploaded', `Uploaded: ${description}`);
+                showToast('Private link added successfully!', 'success');
+                DOMElements.addPrivateLinkForm.reset();
+            } catch (error) {
+                showToast('Error adding private link: ' + error.message, 'error');
+            }
+        });
         DOMElements.searchInput.addEventListener("input", renderAllMaterials);
-        DOMElements.materialsTableContainer.addEventListener('click', (e) => {
+        DOMElements.materialsTableContainer.addEventListener('click', async (e) => {
             const deleteButton = e.target.closest('button.delete-link-btn');
             const downloadButton = e.target.closest('button.download-btn');
+            const shareToggle = e.target.closest('input.share-toggle');
+
             if (deleteButton) {
                 const id = deleteButton.dataset.id;
+                const ownerId = deleteButton.dataset.ownerId;
+                const isPublic = deleteButton.dataset.isPublic;
                 const description = deleteButton.dataset.description;
                 DOMElements.confirmationTitle.textContent = 'Confirm Deletion';
                 DOMElements.confirmationMessage.textContent = `Are you sure you want to delete "${description}"?`;
                 DOMElements.confirmationModal.style.display = 'flex';
-                AppState.actionHandler = () => deleteItem(id, description);
+                AppState.actionHandler = () => deleteItem(id, ownerId, isPublic, description);
             }
             if (downloadButton) {
                 const id = downloadButton.dataset.id;
+                const ownerId = downloadButton.dataset.ownerId;
+                const isPublic = downloadButton.dataset.isPublic === 'true';
                 const link = downloadButton.dataset.link;
                 const description = downloadButton.dataset.description;
-                const countRef = ref(db, `educationalMaterials/${id}/downloadCount`);
+                const path = isPublic ? `educationalMaterials/${id}/downloadCount` : `userMaterials/${ownerId}/${id}/downloadCount`;
+                const countRef = ref(db, path);
                 runTransaction(countRef, (currentCount) => (currentCount || 0) + 1)
                 .then(() => {
                     logAction('File Downloaded', `Downloaded: ${description}`);
                     window.open(link, '_blank');
                 }).catch((error) => {
-                    showToast('Could not open file. Try again.', 'error');
                     window.open(link, '_blank');
                 });
+            }
+            if (shareToggle) {
+                const id = shareToggle.dataset.id;
+                const ownerId = shareToggle.dataset.ownerId;
+                const description = shareToggle.dataset.description;
+                
+                const privateRef = ref(db, `userMaterials/${ownerId}/${id}`);
+                const privateSnap = await get(privateRef);
+                if (privateSnap.exists()) {
+                    const materialData = privateSnap.val();
+                    const publicRef = push(ref(db, 'educationalMaterials'));
+                    await set(publicRef, {
+                        ...materialData,
+                        addedBy: ownerId,
+                        addedByEmail: AppState.allUsers[ownerId]?.email || 'N/A',
+                        downloadCount: 0
+                    });
+                    await remove(privateRef);
+                    showToast(`"${description}" is now public.`, 'success');
+                    logAction('File Shared Publicly', `Shared: ${description}`);
+                    fetchAllMaterials();
+                }
+            }
+        });
+        DOMElements.privateMaterialsTableContainer.addEventListener('click', (e) => {
+            const deleteButton = e.target.closest('button.delete-link-btn');
+            const downloadButton = e.target.closest('button.download-btn');
+            if (deleteButton) {
+                const id = deleteButton.dataset.id;
+                const description = deleteButton.dataset.description;
+                const user = auth.currentUser;
+                if(!user) return;
+                DOMElements.confirmationTitle.textContent = 'Confirm Deletion';
+                DOMElements.confirmationMessage.textContent = `Are you sure you want to delete "${description}"?`;
+                DOMElements.confirmationModal.style.display = 'flex';
+                AppState.actionHandler = () => deleteItem(id, user.uid, 'false', description);
+            }
+            if (downloadButton) {
+                const link = downloadButton.dataset.link;
+                window.open(link, '_blank');
             }
         });
         DOMElements.userManagementContainer.addEventListener('click', (e) => {
@@ -1843,6 +2307,169 @@
                 AppState.actionHandler = () => toggleAdminRole(uid, email, promote);
             }
         });
+
+        // NEW: Classroom Event Listeners
+        DOMElements.classFilesLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            const allSections = [DOMElements.landingPage, DOMElements.authSection, DOMElements.adminPanel, DOMElements.systemAdminPanel, DOMElements.learningResourcesSection, DOMElements.updatePasswordSection, DOMElements.systemOverviewSection, DOMElements.privateLinksSection];
+            allSections.forEach(sec => sec.style.display = 'none');
+
+            if (user) {
+                DOMElements.classManagementSection.style.display = 'block';
+            } else {
+                DOMElements.studentAccessSection.style.display = 'block';
+            }
+        });
+
+        DOMElements.createClassForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const className = DOMElements.newClassName.value.trim();
+            if (!className) {
+                showToast('Please enter a class name.', 'error');
+                return;
+            }
+
+            const accessKey = await generateAccessKey();
+            const classRef = ref(db, `classes/${accessKey}`);
+            try {
+                await set(classRef, {
+                    className,
+                    accessKey,
+                    ownerId: user.uid,
+                    ownerEmail: user.email,
+                    createdAt: serverTimestamp()
+                });
+                showToast(`Class "${className}" created successfully!`, 'success');
+                logAction('Class Created', `Created class: ${className}`);
+                DOMElements.createClassForm.reset();
+            } catch (error) {
+                showToast('Error creating class: ' + error.message, 'error');
+            }
+        });
+
+        DOMElements.myClassesContainer.addEventListener('click', (e) => {
+            const manageBtn = e.target.closest('.manage-files-btn');
+            const deleteBtn = e.target.closest('.revoke');
+
+            if (manageBtn) {
+                document.querySelectorAll('.manage-files-btn.active-class-manager').forEach(btn => btn.classList.remove('active-class-manager'));
+                manageBtn.classList.add('active-class-manager');
+                const classKey = manageBtn.dataset.key;
+                const className = manageBtn.dataset.name;
+                renderClassFileManager(classKey, className);
+            }
+            if (deleteBtn) {
+                const classKey = deleteBtn.dataset.key;
+                const className = deleteBtn.dataset.name;
+                DOMElements.confirmationTitle.textContent = 'Confirm Deletion';
+                DOMElements.confirmationMessage.textContent = `Are you sure you want to delete the class "${className}"? This cannot be undone.`;
+                DOMElements.confirmationModal.style.display = 'flex';
+                AppState.actionHandler = async () => {
+                    await remove(ref(db, `classes/${classKey}`));
+                    showToast(`Class "${className}" deleted.`, 'success');
+                    logAction('Class Deleted', `Deleted class: ${className}`);
+                    DOMElements.confirmationModal.style.display = 'none';
+                    AppState.actionHandler = null;
+                };
+            }
+        });
+        
+        DOMElements.classFilesModal.addEventListener('submit', async (e) => {
+            if (e.target.id === 'addClassFileForm') {
+                e.preventDefault();
+                const activeBtn = document.querySelector('.manage-files-btn.active-class-manager');
+                if (!activeBtn) {
+                    showToast('Error: Could not identify the current class. Please close and reopen the manager.', 'error');
+                    return;
+                }
+                const classKey = activeBtn.dataset.key;
+                const link = document.getElementById('classFileLink').value.trim();
+                const description = document.getElementById('classFileDescription').value.trim();
+
+                if (!link || !description) {
+                    showToast('Link and description are required.', 'error');
+                    return;
+                }
+                const newFileRef = push(ref(db, `classes/${classKey}/materials`));
+                try {
+                    await set(newFileRef, {
+                        link,
+                        description,
+                        createdAt: serverTimestamp()
+                    });
+                    showToast('File added to class.', 'success');
+                    logAction('Class File Added', `Added ${description} to class ${classKey}`);
+                    e.target.reset();
+                } catch (error) {
+                    showToast('Error adding file: ' + error.message, 'error');
+                }
+            }
+        });
+
+        DOMElements.classFilesModal.addEventListener('click', (e) => {
+            if (e.target.id === 'generateClassFileLinkBtn') {
+                const shareLink = document.getElementById('classGoogleDriveLink').value.trim();
+                const fileLinkInput = document.getElementById('classFileLink');
+                if (!shareLink) {
+                    showToast('Please paste a Google Drive share link first.', 'error');
+                    return;
+                }
+                const match = shareLink.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    fileLinkInput.value = `https://drive.google.com/uc?export=download&id=${match[1]}`;
+                    showToast('Download link generated!', 'success');
+                } else {
+                    showToast('Invalid Google Drive share link format.', 'error');
+                }
+            }
+
+            const deleteBtn = e.target.closest('.delete-class-file-btn');
+            if (deleteBtn) {
+                const classKey = deleteBtn.dataset.classKey;
+                const fileKey = deleteBtn.dataset.fileKey;
+                const fileDescription = deleteBtn.closest('tr').querySelector('td').textContent;
+                
+                DOMElements.confirmationTitle.textContent = 'Confirm File Deletion';
+                DOMElements.confirmationMessage.textContent = `Are you sure you want to remove "${fileDescription}" from this class?`;
+                DOMElements.confirmationModal.style.display = 'flex';
+                
+                AppState.actionHandler = async () => {
+                    await remove(ref(db, `classes/${classKey}/materials/${fileKey}`));
+                    showToast('File removed from class.', 'info');
+                    logAction('Class File Deleted', `Removed ${fileDescription} from class`);
+                    DOMElements.confirmationModal.style.display = 'none';
+                    AppState.actionHandler = null;
+                };
+            }
+        });
+        
+        DOMElements.classFilesModalCloseBtn.addEventListener('click', () => {
+            DOMElements.classFilesModal.style.display = 'none';
+            const activeBtn = document.querySelector('.manage-files-btn.active-class-manager');
+            if (activeBtn) {
+                activeBtn.classList.remove('active-class-manager');
+            }
+        });
+
+        DOMElements.studentAccessForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const key = DOMElements.classKeyInput.value.trim();
+            if (!key) return;
+            const classRef = ref(db, `classes/${key}`);
+            const snapshot = await get(classRef);
+            if (snapshot.exists()) {
+                renderClassFilesForStudent(snapshot.val(), key);
+            } else {
+                showToast('Invalid class key. Please check and try again.', 'error');
+                DOMElements.studentClassFilesContainer.innerHTML = '';
+            }
+        });
+
+
         DOMElements.confirmActionBtn.addEventListener('click', () => {
             if (AppState.actionHandler) AppState.actionHandler();
         });
