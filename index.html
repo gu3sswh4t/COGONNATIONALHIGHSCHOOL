@@ -556,11 +556,28 @@
             max-height: 80vh;
             overflow-y: auto;
         }
-        #mobileNavOverlay .header-nav ul ul {
-            display: none;
-        }
-        #mobileNavOverlay .header-nav ul li a {
+        #mobileNavOverlay .header-nav > ul > li > a {
             font-size: 1.5em;
+        }
+        #mobileNavOverlay .header-nav ul ul {
+            display: block;
+            position: static;
+            box-shadow: none;
+            border: none;
+            padding: 10px 0 0 20px;
+            margin-top: 10px;
+            background: transparent;
+            min-width: unset;
+        }
+        #mobileNavOverlay .header-nav ul ul li a {
+            font-size: 1.1em;
+            font-weight: 400;
+            padding: 8px 15px;
+            text-align: center;
+        }
+        #mobileNavOverlay .header-nav ul ul li a:hover {
+            transform: none;
+            background-color: var(--glass-border);
         }
         #mobileNavCloseBtn {
             position: absolute;
