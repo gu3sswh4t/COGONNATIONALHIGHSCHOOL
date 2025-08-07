@@ -2,6 +2,11 @@ const CACHE_NAME = 'cnhs-file-depot-v2';
 const urlsToCache = [
   '/',
   'index.html',
+  'sw.js',
+  'icons/cogon192.png',
+  'icons/cogon512.png',
+  'favicon.ico',
+  'manifest.json',
   'icons/cogon.png'
 ];
 
@@ -32,3 +37,4 @@ self.addEventListener('fetch', (event) => {
   );
 
 });
+
