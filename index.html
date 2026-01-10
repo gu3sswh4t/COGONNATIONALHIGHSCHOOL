@@ -741,7 +741,7 @@
             DOM.loader.style.opacity = '0'; setTimeout(()=>DOM.loader.style.display='none', 500);
 
             [DOM.landingPage, DOM.authSection, DOM.publicRepository, DOM.privateFiles, DOM.classManagement, DOM.systemAdmin, DOM.passwordSection, DOM.studentAccess].forEach(el=>el.style.display='none');
-            [DOM.logoutBtn, DOM.publicFilesBtn, DOM.privateFilesBtn, DOM.myClassesBtn, DOM.systemOverviewBtn, DOM.accountBtn, DOM.userDisplay].forEach(el=>el.style.display='none');
+            [DOM.logoutBtn, DOM.publicFilesBtn, DOM.privateFilesBtn, DOM.myClassesBtn, DOM.systemOverviewBtn, DOM.accountBtn, DOM.welcomeBar].forEach(el=>el.style.display='none');
 
             get(ref(db, 'settings/logo')).then(s => {
                 if(s.exists() && s.val()) {
