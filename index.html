@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cogon National High School | File Depot</title>
+    <title>CNHS FILE DEPOT</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
@@ -147,9 +147,8 @@
             line-height: 1.1;
         }
         
-        /* New Welcome Bar */
         #welcomeBar {
-            display: none; /* Hidden by default */
+            display: none;
             padding: 10px 3%;
             max-width: 1400px;
             margin: 0 auto;
@@ -257,7 +256,6 @@
         #mainLogo { max-width: 150px; max-height: 150px; margin-bottom: 20px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); animation: floatLogo 4s ease-in-out infinite; }
         @keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* Fancy Confirm Modal */
         .modal-content.danger {
             background: #ffffff; border-radius: 20px; width: 90%; max-width: 400px; padding: 40px 30px; text-align: center; position: relative; overflow: visible; box-shadow: 0 25px 50px -12px rgba(220, 38, 38, 0.25);
         }
@@ -337,7 +335,7 @@
         </nav>
 
         <div class="header-actions">
-            <div class="school-name">COGON NATIONAL HIGH SCHOOL</div>
+            <div class="school-name">COGON NATIONAL HIGH SCHOOL &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;BABAK DISTRICT</div>
             <button id="publicFilesBtn" class="btn btn-primary" style="display: none;">Public</button>
             <button id="privateFilesBtn" class="btn btn-secondary" style="display: none;">Private</button>
             <button id="myClassesBtn" class="btn btn-secondary" style="display: none;">Classes</button>
@@ -349,9 +347,7 @@
     </header>
 
     <div id="achievementBanner"><span id="achievementText">Welcome to Cogon National High School</span></div>
-    
     <div id="welcomeBar">Welcome, <span id="currentUserId">User</span></div>
-
     <div id="mobileNav"><button id="closeMobileNav" class="close-modal" style="align-self: flex-end; position:relative; top:0; right:0;">&times;</button><div id="mobileNavContent" style="display: flex; flex-direction: column; gap: 15px;"></div></div>
 
     <main>
@@ -359,7 +355,7 @@
             <img id="mainLogo" src="" style="display:none;" alt="School Logo" />
             <h1 class="hero-title">File Depot</h1>
             <p style="color: var(--text-muted); font-size: 1.25rem; max-width: 500px; margin-bottom: 50px; line-height: 1.6;">
-                The official centralized document portal for Cogon National High School. Secure, organized, and accessible.
+                The official centralized document portal. Secure, organized, and accessible.
             </p>
             <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
                 <button id="loginBtn" class="btn btn-primary" style="padding: 16px 40px; border-radius: 100px; font-size: 1.1rem;">Teacher Login</button>
@@ -681,13 +677,13 @@
             mainLogo: document.getElementById('mainLogo'),
             installAppBtn: document.getElementById('installAppBtn'),
             schoolName: document.querySelector('.school-name'),
-            welcomeBar: document.getElementById('welcomeBar') // Added selector for new welcome bar
+            welcomeBar: document.getElementById('welcomeBar')
         };
 
         let AppState = { currentUser: null, isAdmin: false, isSystemAdmin: false, allMaterials: [], actionHandler: null, editContext: null };
 
         const y = new Date().getFullYear();
-        document.getElementById('footerText').textContent = `© ${y-1}-${y} Cogon National High School | File Depot`;
+        document.getElementById('footerText').textContent = `© ${y-1}-${y} Cogon National High School. Made with 💖 by Ram`;
 
         const showToast = (msg, type='info') => { const toast = document.createElement('div'); toast.className = `toast ${type}`; toast.textContent = msg; DOM.toastContainer.appendChild(toast); setTimeout(()=>toast.remove(), 4000); }
         window.copyToClipboard = (text) => navigator.clipboard.writeText(text).then(() => showToast("Copied!", "success"));
@@ -751,16 +747,15 @@
             });
 
             if(user) {
-                // LOGGED IN STATE
                 DOM.schoolName.style.display = 'none';
-                DOM.welcomeBar.style.display = 'flex'; // Show new welcome bar
+                DOM.welcomeBar.style.display = 'flex';
                 
                 const adminRef = ref(db, `admins/${user.uid}`);
                 const snap = await get(adminRef);
                 AppState.isAdmin = snap.exists() || user.uid === SYSTEM_ADMIN_UID;
                 AppState.isSystemAdmin = user.uid === SYSTEM_ADMIN_UID;
 
-                DOM.currentUserId.textContent = user.email.split('@')[0]; // Set name in new bar
+                DOM.currentUserId.textContent = user.email.split('@')[0];
                 DOM.logoutBtn.style.display = 'block'; DOM.accountBtn.style.display = 'block';
                 DOM.publicFilesBtn.style.display = 'block'; DOM.privateFilesBtn.style.display = 'block';
                 DOM.myClassesBtn.style.display = 'block';
@@ -775,9 +770,8 @@
                 }
                 initListeners();
             } else {
-                // LOGGED OUT STATE
                 DOM.schoolName.style.display = ''; 
-                DOM.welcomeBar.style.display = 'none'; // Hide welcome bar
+                DOM.welcomeBar.style.display = 'none';
                 DOM.landingPage.style.display = 'flex';
                 initPublicShortcuts(); initListeners();
             }
@@ -984,7 +978,7 @@
                             <td>${roleBadge}</td>
                             <td style="text-align:right; white-space:nowrap;">`;
 
-                        // Action Buttons Logic
+
                         if (isSelf) {
                              managementTable += `<span style="color:var(--text-muted); font-size:0.8rem; font-style:italic;">Current User</span>`;
                         } else {
@@ -1039,7 +1033,7 @@
                 document.getElementById('userListModal').classList.add('active');
             }
             
-            // New Toggle Disable Function
+
             window.toggleDisable = async (uid, shouldDisable) => {
                 await update(ref(db, `users/${uid}`), { isDisabled: shouldDisable });
                 showToast(shouldDisable ? "User Disabled" : "User Enabled");
@@ -1095,16 +1089,16 @@
         document.body.addEventListener('click', async (e) => {
             if(e.target.closest('.nav-item')) {
                 const item = e.target.closest('.nav-item');
-                // Mobile behavior is handled by CSS, we just need to toggle active class
+
                 if(item.querySelector('.dropdown-menu')) {
                     if(!e.target.closest('.dropdown-link')) {
-                         // Close other nav items
+
                         document.querySelectorAll('.nav-item').forEach(i => { if(i!==item) i.classList.remove('active'); });
                         item.classList.toggle('active');
                     }
                 }
             } else {
-                 // Close all if clicking outside (optional, but good for desktop)
+
                  if(!e.target.closest('#mobileNav')) {
                     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
                  }
@@ -1178,7 +1172,7 @@
                 body.innerHTML = '<div class="spinner"></div>';
                 document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
                 
-                // Close mobile nav if open
+
                 document.getElementById('mobileNav').classList.remove('open');
 
                 const s = await get(ref(db, `pageContent/${pid}`));
@@ -1200,7 +1194,6 @@
                 DOM.lightbox.style.display = 'flex';
             }
             
-            // GLOBAL DELETE CONFIRMATION HANDLER
              if(e.target.closest('.delete-btn')) {
                 const btn = e.target.closest('.delete-btn');
                 document.getElementById('confirmationModal').classList.add('active');
@@ -1219,7 +1212,6 @@
                 }
             }
             
-            // GLOBAL DELETE CLASS HANDLER
              if(e.target.closest('.delete-class-btn')) {
                  const btn = e.target.closest('.delete-class-btn');
                  document.getElementById('confirmationModal').classList.add('active');
@@ -1270,12 +1262,25 @@
                 document.getElementById('forgotPasswordModal').classList.add('active');
             });
         }
+        
+        setupForm('forgotPasswordForm', async () => {
+             const email = document.getElementById('forgotPasswordEmail').value;
+             try {
+                await sendPasswordResetEmail(auth, email);
+                showToast("Reset link sent! Check spam folder.", "success");
+                document.getElementById('forgotPasswordModal').classList.remove('active');
+             } catch(err) {
+                 console.error(err);
+                 if(err.code === 'auth/user-not-found') showToast("Email not found.", "error");
+                 else showToast("Failed to send. Try again.", "error");
+             }
+        });
 
         document.getElementById('confirmActionBtn').addEventListener('click', () => {
              if(AppState.actionHandler) AppState.actionHandler();
         });
 
-        // EDIT FORMS
+
         document.getElementById('editClassForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if(AppState.editContext && AppState.editContext.type === 'class') {
@@ -1308,7 +1313,7 @@
         setupForm('loginForm', async () => {
             try {
                 const result = await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
-                // Check if disabled
+
                 const user = result.user;
                 const snap = await get(ref(db, `users/${user.uid}/isDisabled`));
                 if(snap.exists() && snap.val() === true) {
@@ -1351,7 +1356,7 @@
             showToast("Saved Privately!"); 
         });
         
-        // LOGO UPLOAD FORM
+
         setupForm('landingLogoForm', async () => {
             const link = document.getElementById('landingLogoInput').value;
             await set(ref(db, 'settings/logo'), link);
@@ -1406,16 +1411,16 @@
         
         document.getElementById('mobileMenuBtn').addEventListener('click', () => {
             const nav = document.getElementById('mobileNav'); const content = document.getElementById('mobileNavContent'); nav.classList.add('open');
-            // Re-render mobile menu with fresh content
+
             content.innerHTML = document.querySelector('.nav-desktop ul').innerHTML;
             
-            // Handle PWA button visibility in mobile menu
+
             const installBtn = content.querySelector('#installAppBtn');
             if(installBtn) {
                  if(deferredPrompt) installBtn.classList.add('mobile-visible');
                  else installBtn.style.display = 'none';
 
-                 // Re-attach event listener for the cloned button
+
                  installBtn.addEventListener('click', async () => {
                     if (deferredPrompt) {
                         deferredPrompt.prompt();
@@ -1441,7 +1446,7 @@
 
         onAuthStateChanged(auth, updateUI);
         
-        // PWA Install Logic
+
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
