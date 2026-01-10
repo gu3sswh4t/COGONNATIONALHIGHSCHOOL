@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;700;800&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
     <style>
         :root {
             --primary: #4f46e5;
@@ -65,6 +66,12 @@
         .btn-danger:hover { background: #ef4444; color: white; }
         .btn-icon { padding: 8px; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: var(--text-muted); transition: 0.2s; }
         .btn-icon:hover { background: rgba(0,0,0,0.05); color: var(--primary); }
+        
+        .btn-install { 
+            background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; 
+            padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; display: none;
+        }
+        .btn-install:hover { background: #bfdbfe; }
 
         .btn-back {
             display: inline-flex; align-items: center; gap: 8px;
@@ -100,11 +107,11 @@
 
         .header {
             position: sticky; top: 0; z-index: 1000;
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0,0,0,0.05); padding: 15px 3%;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.05); padding: 10px 3%;
             display: flex; justify-content: space-between; align-items: center;
         }
-        .nav-desktop ul { display: flex; gap: 10px; list-style: none; margin: 0; padding: 0; }
+        .nav-desktop ul { display: flex; gap: 5px; list-style: none; margin: 0; padding: 0; align-items: center; }
         .nav-item { position: relative; }
         .nav-link { 
             color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.95rem;
@@ -125,7 +132,19 @@
         .dropdown-link { display: block; padding: 12px 16px; color: var(--text-muted); text-decoration: none; font-size: 0.95rem; border-radius: 6px; cursor: pointer; transition: 0.2s; }
         .dropdown-link:hover { background: #eff6ff; color: var(--primary); }
         
-        .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+        .header-actions { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: flex-end; }
+        
+        .school-name { 
+            font-weight: 800; 
+            color: #111827; 
+            font-family: var(--font-head); 
+            letter-spacing: -0.5px; 
+            text-transform: uppercase; 
+            font-size: 1.5rem;
+            text-align: right;
+            line-height: 1.1;
+        }
+        
         .user-pill { font-size: 0.9rem; color: var(--text-muted); margin-right: 10px; background: rgba(0,0,0,0.03); padding: 5px 12px; border-radius: 50px;}
         .user-pill span { color: var(--primary); font-weight: 700; }
 
@@ -243,11 +262,31 @@
             .mobile-toggle { display: block; }
             main { padding: 30px 4%; }
             .hero-title { font-size: 2.5rem; }
+            .school-name { display: none; }
             .header-actions { justify-content: flex-end; }
         }
         .mobile-toggle { display: none; background: none; border: none; color: #111; cursor: pointer; }
-        #mobileNav { position: fixed; inset: 0; background: white; z-index: 150; padding: 30px; display: flex; flex-direction: column; gap: 20px; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        #mobileNav { position: fixed; inset: 0; background: white; z-index: 150; padding: 30px; display: flex; flex-direction: column; gap: 20px; transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
         #mobileNav.open { transform: translateX(0); }
+
+
+        #mobileNav .nav-item { display: block; width: 100%; margin-bottom: 10px; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px; }
+        #mobileNav .nav-link { justify-content: space-between; width: 100%; background: none; padding: 10px 0; font-size: 1.1rem;}
+        #mobileNav .dropdown-menu { 
+            position: static; 
+            opacity: 1; 
+            visibility: visible; 
+            transform: none; 
+            box-shadow: none; 
+            border: none; 
+            padding-left: 15px; 
+            display: none;
+            max-height: none;
+            width: 100%;
+        }
+        #mobileNav .nav-item.active .dropdown-menu { display: block; }
+        #mobileNav .btn-install { display: none; width: 100%; text-align: center; margin-top:10px; }
+        #mobileNav .btn-install.mobile-visible { display: block; }
     </style>
 </head>
 <body>
@@ -279,10 +318,12 @@
                         <div class="dropdown-link" data-page-id="history">History</div>
                     </div>
                 </li>
+                <li><button id="installAppBtn" class="btn-install">Download ⬇️</button></li>
             </ul>
         </nav>
 
         <div class="header-actions">
+            <div class="school-name">COGON NATIONAL HIGH SCHOOL &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp; BABAK DISTRICT</div>
             <div id="userDisplay" class="user-pill" style="display: none;">Welcome, <span id="currentUserId">User</span></div>
             <button id="publicFilesBtn" class="btn btn-primary" style="display: none;">Public</button>
             <button id="privateFilesBtn" class="btn btn-secondary" style="display: none;">Private</button>
@@ -302,7 +343,7 @@
             <img id="mainLogo" src="" style="display:none;" alt="School Logo" />
             <h1 class="hero-title">File Depot</h1>
             <p style="color: var(--text-muted); font-size: 1.25rem; max-width: 500px; margin-bottom: 50px; line-height: 1.6;">
-                The official document portal for Cogon National High School.
+                The official centralized document portal for Cogon National High School. Organized and accessible.
             </p>
             <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
                 <button id="loginBtn" class="btn btn-primary" style="padding: 16px 40px; border-radius: 100px; font-size: 1.1rem;">Teacher Login</button>
@@ -621,13 +662,15 @@
             userDisplay: document.getElementById('userDisplay'), currentUserId: document.getElementById('currentUserId'),
             achievementBanner: document.getElementById('achievementBanner'), achievementText: document.getElementById('achievementText'),
             lightbox: document.getElementById('lightbox'), lightboxImg: document.getElementById('lightboxImg'),
-            mainLogo: document.getElementById('mainLogo')
+            mainLogo: document.getElementById('mainLogo'),
+            installAppBtn: document.getElementById('installAppBtn'),
+            schoolName: document.querySelector('.school-name')
         };
 
         let AppState = { currentUser: null, isAdmin: false, isSystemAdmin: false, allMaterials: [], actionHandler: null, editContext: null };
 
         const y = new Date().getFullYear();
-        document.getElementById('footerText').textContent = `© ${y-1}-${y} Cogon National High School 304223 | Babak District`;
+        document.getElementById('footerText').textContent = `© ${y-1}-${y} Cogon National High School. Made with ❤️ by Ram`;
 
         const showToast = (msg, type='info') => { const toast = document.createElement('div'); toast.className = `toast ${type}`; toast.textContent = msg; DOM.toastContainer.appendChild(toast); setTimeout(()=>toast.remove(), 4000); }
         window.copyToClipboard = (text) => navigator.clipboard.writeText(text).then(() => showToast("Copied!", "success"));
@@ -691,6 +734,9 @@
             });
 
             if(user) {
+
+                DOM.schoolName.style.display = 'none';
+
                 const adminRef = ref(db, `admins/${user.uid}`);
                 const snap = await get(adminRef);
                 AppState.isAdmin = snap.exists() || user.uid === SYSTEM_ADMIN_UID;
@@ -711,6 +757,8 @@
                 }
                 initListeners();
             } else {
+
+                DOM.schoolName.style.display = '';
                 DOM.landingPage.style.display = 'flex';
                 initPublicShortcuts(); initListeners();
             }
@@ -1003,14 +1051,19 @@
         document.body.addEventListener('click', async (e) => {
             if(e.target.closest('.nav-item')) {
                 const item = e.target.closest('.nav-item');
+
                 if(item.querySelector('.dropdown-menu')) {
                     if(!e.target.closest('.dropdown-link')) {
+
                         document.querySelectorAll('.nav-item').forEach(i => { if(i!==item) i.classList.remove('active'); });
                         item.classList.toggle('active');
                     }
                 }
             } else {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+
+                 if(!e.target.closest('#mobileNav')) {
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                 }
             }
 
             if(e.target.id === 'publicFilesBtn') {
@@ -1080,6 +1133,9 @@
                 modal.classList.add('active');
                 body.innerHTML = '<div class="spinner"></div>';
                 document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                
+
+                document.getElementById('mobileNav').classList.remove('open');
 
                 const s = await get(ref(db, `pageContent/${pid}`));
                 body.innerHTML = '';
@@ -1100,6 +1156,7 @@
                 DOM.lightbox.style.display = 'flex';
             }
             
+
              if(e.target.closest('.delete-btn')) {
                 const btn = e.target.closest('.delete-btn');
                 document.getElementById('confirmationModal').classList.add('active');
@@ -1118,6 +1175,7 @@
                 }
             }
             
+
              if(e.target.closest('.delete-class-btn')) {
                  const btn = e.target.closest('.delete-class-btn');
                  document.getElementById('confirmationModal').classList.add('active');
@@ -1173,6 +1231,7 @@
              if(AppState.actionHandler) AppState.actionHandler();
         });
 
+ 
         document.getElementById('editClassForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if(AppState.editContext && AppState.editContext.type === 'class') {
@@ -1240,6 +1299,7 @@
             showToast("Saved Privately!"); 
         });
         
+
         setupForm('landingLogoForm', async () => {
             const link = document.getElementById('landingLogoInput').value;
             await set(ref(db, 'settings/logo'), link);
@@ -1294,7 +1354,29 @@
         
         document.getElementById('mobileMenuBtn').addEventListener('click', () => {
             const nav = document.getElementById('mobileNav'); const content = document.getElementById('mobileNavContent'); nav.classList.add('open');
+
             content.innerHTML = document.querySelector('.nav-desktop ul').innerHTML;
+            
+
+            const installBtn = content.querySelector('#installAppBtn');
+            if(installBtn) {
+                 if(deferredPrompt) installBtn.classList.add('mobile-visible');
+                 else installBtn.style.display = 'none';
+
+
+                 installBtn.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        if (outcome === 'accepted') {
+                            deferredPrompt = null;
+                            installBtn.style.display = 'none';
+                            DOM.installAppBtn.style.display = 'none';
+                        }
+                    }
+                 });
+            }
+
             if(AppState.currentUser) {
                 content.innerHTML += `<hr style="border:0; border-top:1px solid rgba(0,0,0,0.05); width:100%">`;
                 if(AppState.isSystemAdmin) content.innerHTML += `<button onclick="document.getElementById('systemOverviewBtn').click(); document.getElementById('mobileNav').classList.remove('open')" class="btn btn-secondary" style="width:100%">Admin</button>`;
@@ -1307,6 +1389,25 @@
 
         onAuthStateChanged(auth, updateUI);
         
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            DOM.installAppBtn.style.display = 'inline-flex';
+        });
+
+        DOM.installAppBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    DOM.installAppBtn.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+
         window.addEventListener('load', async () => {
            if(typeof tsParticles !== 'undefined') {
                 await tsParticles.load("tsparticles", { particles: { number: { value: 30 }, color: { value: "#4f46e5" }, opacity: { value: 0.1 }, size: { value: 2 }, move: { enable: true, speed: 0.5 } } });
